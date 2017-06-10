@@ -1,0 +1,81 @@
+@import './css/normalize.css';
+@import './css/main.css';
+
+body {
+  // padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+
+body {
+  //border: 1px solid green;
+}
+
+h3 {
+  margin: 0 0 0 30px;
+  //border: 1px solid red;
+}
+
+.canvas-container {
+  position: absolute;
+  top: 35px;
+  left: 40px;
+  bottom: 40px;
+  right: 40px;
+  user-select: none;
+  //border: 1px solid red;
+
+  .table-container {
+    position: absolute;
+    top: 0;
+    right: 0;
+    user-select: none;
+    //border: 1px solid green;
+    border-spacing: 0;
+
+    td {
+      position: relative;
+      //border: 1px dashed red;
+    }
+
+    .chart-canvas {
+      position: absolute;
+      top: 0;
+      right: 0;
+      user-select: none;
+      //border: 1px solid blue;
+    }
+
+    .yaxis-container {
+      width: 85px;
+    }
+
+    .yaxis-canvas {
+      position: absolute;
+      top: 0;
+      right: 0;
+      user-select: none;
+      //border: 1px solid blue;
+      //width: 85px;
+    }
+
+    .xaxis-container {
+      height: 40px;
+    }
+
+    .xaxis-canvas {
+      position: absolute;
+      top: 0;
+      right: 0;
+      user-select: none;
+      //border: 1px solid blue;
+      //width: 85px;
+    }
+
+  }
+}
+
