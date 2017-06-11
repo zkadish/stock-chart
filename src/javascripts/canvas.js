@@ -16,8 +16,8 @@ export default class StockChart {
     this.context = this.canvas.getContext('2d');
 
     // constants
-    this.loopCount = 0;
-    this.hGridLines = 10; //18
+    // this.loopCount = 0;
+    this.hGridLines = 10; // 18
     this.chartUpperVal = null;
     this.chartLowerVal = null;
 
@@ -28,8 +28,8 @@ export default class StockChart {
     this.canvas.setAttribute('width', this.canvasWidth);
     this.canvas.setAttribute('height', this.canvasHeight);
 
-    this.canvas.style.width = this.canvasWidth * .5 + 'px';
-    this.canvas.style.height = this.canvasHeight * .5 + 'px';
+    this.canvas.style.width = `${this.canvasWidth * 0.5}px`;
+    this.canvas.style.height = `${this.canvasHeight * 0.5}px`;
 
     this.yPointPos = this.yPointPos.bind(this);
     this.valueRange = this.valueRange.bind(this);
@@ -37,7 +37,7 @@ export default class StockChart {
     document.addEventListener('window:onresize', this.windowOnResizeHandler, false);
   }
 
-  windowOnResizeHandler () {
+  windowOnResizeHandler() {
     this.containerRect = this.canvasContainer.getBoundingClientRect();
     this.canvasWidth = this.containerRect.width * 2;
     this.canvasHeight = this.containerRect.height * 2;
@@ -48,10 +48,10 @@ export default class StockChart {
     this.context.translate(canvasWidth, canvasHeight);
   }
 
-  roundOffVals (upperVal, lowerVal) {
-    //debugger;
-    //var startRange = Math.ceil(upperVal) - Math.floor(lowerVal);
-    //console.log(startRange);
+  roundOffVals(upperVal, lowerVal) {
+    // debugger;
+    // var startRange = Math.ceil(upperVal) - Math.floor(lowerVal);
+    // console.log(startRange);
 
     var range = Math.ceil(upperVal) - Math.floor(lowerVal);
     //var rangeDif = null;
