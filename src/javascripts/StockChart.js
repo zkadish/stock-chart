@@ -7,7 +7,6 @@ import moment from 'moment';
 
 export default class StockChart {
   constructor(priceData) {
-    // debugger;
     this.priceData = priceData;
     this.canvasContainer = document.querySelector('.chart-container');
 
@@ -15,8 +14,6 @@ export default class StockChart {
     this.canvas = document.querySelector('.chart-canvas');
     this.context = this.canvas.getContext('2d');
 
-    // constants
-    // this.loopCount = 0;
     this.hGridLines = 10; // 18
     this.chartUpperVal = null;
     this.chartLowerVal = null;
@@ -34,6 +31,7 @@ export default class StockChart {
     this.yPointPos = this.yPointPos.bind(this);
     this.valueRange = this.valueRange.bind(this);
 
+    this.windowOnResizeHandler = this.windowOnResizeHandler.bind(this);
     document.addEventListener('window:onresize', this.windowOnResizeHandler, false);
   }
 
@@ -42,10 +40,11 @@ export default class StockChart {
     this.canvasWidth = this.containerRect.width * 2;
     this.canvasHeight = this.containerRect.height * 2;
 
-    this.canvas.style.width = this.canvasWidth * .5 + 'px';
-    this.canvas.style.height = this.canvasHeight * .5 + 'px';
+    this.canvas.setAttribute('width', this.canvasWidth);
+    this.canvas.setAttribute('height', this.canvasHeight);
 
-    this.context.translate(canvasWidth, canvasHeight);
+    this.canvas.style.width = `${this.canvasWidth * 0.5}px`;
+    this.canvas.style.height = `${this.canvasHeight * 0.5}px`;
   }
 
   roundOffVals(upperVal, lowerVal) {
@@ -87,21 +86,21 @@ export default class StockChart {
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   // Y POSITION - BAR DATA
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  yPointPos (pointVal, upperVal, lowerVal) {
-    // half the height of a grid space, accounts 
+  yPointPos(pointVal, upperVal, lowerVal) {
+    // half the height of a grid space, accounts
     // for small buffer on top and bottom of chart
-    var cHeight = this.canvasHeight * ((this.hGridLines - 1) / this.hGridLines); // (9/10) (17/18)
+    const cHeight = this.canvasHeight * ((this.hGridLines - 1) / this.hGridLines); // (9/10) (17/18)
     // use lowerVal to account for canvas (0,0) being at the bottom right
     // ÷ by the difference of upperVal and lowerVal to find where the point is verticaly
     // based on percentage.
-    var valRatio = (pointVal - lowerVal) / (upperVal - lowerVal);
+    const valRatio = (pointVal - lowerVal) / (upperVal - lowerVal);
     // 1 = 100% of chart hight ÷ number of horizontal grid lines ÷ in half for upper and lower
-    // this equation adjusts the bar values up half the height of a grid space to account for 
+    // this equation adjusts the bar values up half the height of a grid space to account for
     // the value placment start in the middle of the chart and being placed up and down from
-    // there. the grid also starts half a grid space away from the middle of the chat. this is 
+    // there. the grid also starts half a grid space away from the middle of the chat. this is
     // so there could be an even number of grid lines on the top and the bottom of the of the
     // chart at initail render time.
-    var yPos = (cHeight * valRatio) + (this.canvasHeight * ((1 / this.hGridLines) / 2));
+    const yPos = (cHeight * valRatio) + (this.canvasHeight * ((1 / this.hGridLines) / 2));
     return yPos;
   }
 
@@ -110,23 +109,23 @@ export default class StockChart {
   // ********************************************
   setRange(priceData, chartVal, upper) {
     let prop = null;
-    let val = null;
-    upper ? prop = 'chartUpperVal' : prop = 'chartLowerVal';
+    prop = upper ? 'chartUpperVal' : 'chartLowerVal';
     if (!chartVal) {
       this[prop] = upper ? priceData.High : priceData.Low;
       return;
     }
     if (upper && priceData.High > this[prop]) {
       this[prop] = Math.ceil(priceData.High);
-      console.log('upper', this.chartUpperVal);
+      // console.log('upper', this.chartUpperVal);
       return;
     }
     if (!upper && priceData.Low < this[prop]) {
       this[prop] = Math.ceil(priceData.Low);
-      console.log('lower', this.chartLowerVal);  
+      // console.log('lower', this.chartLowerVal);  
     }
-  };
-  valueRange (priceData, chartUpperVal, chartLowerVal) {
+  }
+
+  valueRange(priceData, chartUpperVal, chartLowerVal) {
     this.setRange(priceData, chartUpperVal, true);
     this.setRange(priceData, chartLowerVal, false);
   }
@@ -134,7 +133,8 @@ export default class StockChart {
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   // BAR DISPLAY
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  BarData (n, yPos, vRange, i) {
+  BarData(n, yPos, vRange, index) {
+    let i = index;
     const color = '#aaaaaa';
     const x = 0;
     const y = 0;
@@ -185,7 +185,7 @@ export default class StockChart {
       -((n + buffer + ((6 * window.horizontalZoom) * .5) - .5) - ((window.horizontalPan))),
       -(barHighPos) + (window.verticalPan),
       width * window.horizontalZoom,
-      (barHighPos - barLowPos)
+      (barHighPos - barLowPos),
     );
 
     // draw open
@@ -194,7 +194,7 @@ export default class StockChart {
       -((n + buffer)) + (((6 * window.horizontalZoom) * .5) + .5) + ((window.horizontalPan)),
       -(barOpenPos) + (window.verticalPan),
       -((10 * window.horizontalZoom) + (((6 * window.horizontalZoom) * .5) + .5)),
-      (5 * (window.horizontalZoom * window.horizontalZoom * window.horizontalZoom)) / window.verticalZoom
+      (5 * (window.horizontalZoom * window.horizontalZoom * window.horizontalZoom)) / window.verticalZoom,
     );
 
     // draw close
@@ -203,12 +203,12 @@ export default class StockChart {
       -((n + buffer)) - (((6 * window.horizontalZoom) * .5) - .5) + ((window.horizontalPan)),
       -(barClosePos) + (window.verticalPan),
       ((10 * window.horizontalZoom) + (((6 * window.horizontalZoom) * .5) - .5)),
-      (5 * (window.horizontalZoom * window.horizontalZoom * window.horizontalZoom)) / window.verticalZoom
+      (5 * (window.horizontalZoom * window.horizontalZoom * window.horizontalZoom)) / window.verticalZoom,
     );
 
     this.context.restore();
 
-    i++;
+    i += 1;
     this.BarData(n + offset, yPos, vRange, i);
   }
 
@@ -436,7 +436,7 @@ export default class StockChart {
     this.context.restore();
   }
 
-  upperHorizontalLines (n = ((this.canvasHeight/this.hGridLines)/2)/1) {
+  upperHorizontalLines (n = ((this.canvasHeight / this.hGridLines) / 2) / 1) {
     const color = '#cccccc';
     const x = 0;
     const width = -(this.canvasWidth);

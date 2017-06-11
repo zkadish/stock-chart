@@ -1,6 +1,7 @@
-import chartLoop from './chartLoop';
-import StockChart from 'javascripts/canvas';
-import yAxisCanvas from 'javascripts/chart-yaxis';
+import chartLoop from 'javascripts/chartLoop';
+import StockChart from 'javascripts/StockChart';
+import ChartYAxis from 'javascripts/ChartYAxis';
+// import yAxisCanvas from 'javascripts/chart-yaxis';
 import xAxisCanvas from 'javascripts/chart-xaxis';
 import HorizontalZoom from 'javascripts/horizontalZoom';
 import VerticalZoom from 'javascripts/verticalZoom';
@@ -53,8 +54,9 @@ fetch('https://www.quandl.com/api/v3/datasets/BCHARTS/BITSTAMPUSD.json?limit=100
     }
   });
   const stockChart = new StockChart(priceData);
+  const chartYAxis = new ChartYAxis(priceData);
   // console.log('app');
-  chartLoop(stockChart);
-  yAxisCanvas(priceData);
+  chartLoop(stockChart, chartYAxis);
+  // yAxisCanvas(priceData);
   xAxisCanvas(priceData);
 });

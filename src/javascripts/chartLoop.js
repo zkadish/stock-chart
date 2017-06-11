@@ -1,7 +1,7 @@
-function startChart (chart) {
 
-  function render () {
-    // console.log('render');
+function startChart(chart, yaxis) {
+  function render() {
+    // StockChart
     chart.context.translate(chart.canvasWidth, chart.canvasHeight);
     chart.context.restore();
     chart.context.clearRect(0, 0, -(chart.canvasWidth), -(chart.canvasHeight));
@@ -13,7 +13,6 @@ function startChart (chart) {
     // chart.context.fill();
 
     chart.context.save();
-    // main chart elements
     chart.ChartBorder();
     chart.VerticalLines(0, chart.processDate, 0);
     chart.MonthYear(0, chart.processDate, 0);
@@ -22,6 +21,18 @@ function startChart (chart) {
     chart.CurrentPrice();
     chart.BarData(0, chart.yPointPos, chart.valueRange, 0);
     chart.context.restore();
+
+    // yAxisChart
+    yaxis.context.translate(yaxis.canvasWidth, yaxis.canvasHeight);
+    yaxis.context.restore();
+    yaxis.context.clearRect(0, 0, -(chart.canvasWidth), -(chart.canvasHeight));
+    yaxis.context.save();
+
+    yaxis.context.save();
+    yaxis.upperHorizontalLines();
+    yaxis.lowerHorizontalLines();
+    yaxis.CurrentPrice();
+    yaxis.context.restore();
   }
 
   // This fuction uses request animaiton frame to create a render loop
