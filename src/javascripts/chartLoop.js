@@ -12,21 +12,15 @@ function startChart (chart) {
     // chart.context.strokeRect(0, 0, -(chart.canvasWidth), -(chart.canvasHeight));
     // chart.context.fill();
 
-    //hLines.draw(0);
-    chart.context.save(); 
+    chart.context.save();
+    // main chart elements
     chart.ChartBorder();
-    //chartArea.draw();
     chart.VerticalLines(0, chart.processDate, 0);
     chart.MonthYear(0, chart.processDate, 0);
-
-    // chart.upperHorizontalLines((hLines.offset / 2) / hLines.offsetScale, 'lightblue');
     chart.upperHorizontalLines();
-    //vMidPoint.draw();
     chart.lowerHorizontalLines();
-    // hMidPoint.draw();
-    //cPrice.draw();
+    chart.CurrentPrice();
     chart.BarData(0, chart.yPointPos, chart.valueRange, 0);
-    //testSquare.draw();
     chart.context.restore();
   }
 

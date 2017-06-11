@@ -1,10 +1,11 @@
 import moment from 'moment';
 // import yAxisCanvas from 'javascripts/chart-yaxis';
 
-// LOOP FUNCTION
+// TODO: create a StockChart class and extend all other classes from it!
+// ie: the x and y axis should be extended from StockCart
 
 
-export default class chartCanvas {
+export default class StockChart {
   constructor(priceData) {
     // debugger;
     this.priceData = priceData;
@@ -117,10 +118,12 @@ export default class chartCanvas {
     }
     if (upper && priceData.High > this[prop]) {
       this[prop] = Math.ceil(priceData.High);
+      console.log('upper', this.chartUpperVal);
       return;
     }
     if (!upper && priceData.Low < this[prop]) {
       this[prop] = Math.ceil(priceData.Low);
+      console.log('lower', this.chartLowerVal);  
     }
   };
   valueRange (priceData, chartUpperVal, chartLowerVal) {
@@ -132,9 +135,6 @@ export default class chartCanvas {
   // BAR DISPLAY
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   BarData (n, yPos, vRange, i) {
-    // var self = this;
-    // var i = 0;
-
     const color = '#aaaaaa';
     const x = 0;
     const y = 0;
@@ -142,84 +142,75 @@ export default class chartCanvas {
     const height = 40;
     const buffer = 30;
     const offset = 40;
-    // self.draw = function (n, yPos, vRange) {
-      if (i >= this.priceData.length) {
-        i = 0;
-        return;
-      }
-      if (((n + buffer) * window.horizontalZoom) > this.canvasWidth + (window.horizontalPan * window.horizontalZoom)) {
-        i = 0;
-        // console.log(chartUpperVal, chartLowerVal);
-        var priceValueRange = new CustomEvent('pricevalue:range', {
-          detail: {
-            chartUpperVal: this.chartUpperVal,
-            chartLowerVal: this.chartLowerVal
-          }
-        });
-        document.dispatchEvent(priceValueRange);
-        // why? not sure I need to be rounding the values anymore...
-        // this.roundOffVals(this.chartUpperVal, this.chartLowerVal);
-        return;
-      }
-      // debugger;
-      vRange(this.priceData[i], this.chartUpperVal, this.chartLowerVal);
-      // debugger;
-      var barHighPos = yPos(this.priceData[i].High, this.chartUpperVal, this.chartLowerVal);
-      var barLowPos = yPos(this.priceData[i].Low, this.chartUpperVal, this.chartLowerVal);
-      var barOpenPos = yPos(this.priceData[i].Open, this.chartUpperVal, this.chartLowerVal);
-      var barClosePos = yPos(this.priceData[i].Close, this.chartUpperVal, this.chartLowerVal);
-      // console.log(barHighPos, this.priceData[i].High);
-      // debugger;
+    
+    if (i >= this.priceData.length) {
+      i = 0;
+      return;
+    }
+    if (((n + buffer) * window.horizontalZoom) > this.canvasWidth + (window.horizontalPan * window.horizontalZoom)) {
+      i = 0;
+      // console.log(chartUpperVal, chartLowerVal);
+      var priceValueRange = new CustomEvent('pricevalue:range', {
+        detail: {
+          chartUpperVal: this.chartUpperVal,
+          chartLowerVal: this.chartLowerVal
+        }
+      });
+      document.dispatchEvent(priceValueRange);
+      // why? not sure I need to be rounding the values anymore...
+      // this.roundOffVals(this.chartUpperVal, this.chartLowerVal);
+      return;
+    }
+    
+    vRange(this.priceData[i], this.chartUpperVal, this.chartLowerVal);
+    
+    var barHighPos = yPos(this.priceData[i].High, this.chartUpperVal, this.chartLowerVal);
+    var barLowPos = yPos(this.priceData[i].Low, this.chartUpperVal, this.chartLowerVal);
+    var barOpenPos = yPos(this.priceData[i].Open, this.chartUpperVal, this.chartLowerVal);
+    var barClosePos = yPos(this.priceData[i].Close, this.chartUpperVal, this.chartLowerVal);
 
-      this.context.save();
-      this.context.beginPath();
-      this.context.translate(0,  -(this.canvasHeight * .5));
-      this.context.scale(window.horizontalZoom, window.verticalZoom);
-      this.context.translate(0, this.canvasHeight * .5);
+    this.context.save();
+    this.context.beginPath();
 
-      this.context.translate(-(n + buffer - (window.horizontalPan)), 0);
-      this.context.scale(window.horizontalZoom, 1);
+    // why so many transforms?
+    this.context.translate(0,  -(this.canvasHeight * .5));
+    this.context.scale(window.horizontalZoom, window.verticalZoom);
+    this.context.translate(0, this.canvasHeight * .5);
+    this.context.translate(-(n + buffer - (window.horizontalPan)), 0);
+    this.context.scale(window.horizontalZoom, 1);
+    this.context.translate((n + buffer - (window.horizontalPan)), 0);
 
-      this.context.translate((n + buffer - (window.horizontalPan)), 0);
+    this.context.fillStyle = 'black';
+    this.context.fillRect(
+      -((n + buffer + ((6 * window.horizontalZoom) * .5) - .5) - ((window.horizontalPan))),
+      -(barHighPos) + (window.verticalPan),
+      width * window.horizontalZoom,
+      (barHighPos - barLowPos)
+    );
 
-      // draw bar
-      // this.context.save();
-      this.context.fillStyle = 'black';
-      this.context.fillRect(
-        -((n + buffer + ((6 * window.horizontalZoom) * .5) - .5) - ((window.horizontalPan))),
-        -(barHighPos) + (window.verticalPan),
-        width * window.horizontalZoom,
-        (barHighPos - barLowPos)
-      );
-      // this.context.restore();
-      // debugger;
+    // draw open
+    this.context.fillStyle = 'black';
+    this.context.fillRect(
+      -((n + buffer)) + (((6 * window.horizontalZoom) * .5) + .5) + ((window.horizontalPan)),
+      -(barOpenPos) + (window.verticalPan),
+      -((10 * window.horizontalZoom) + (((6 * window.horizontalZoom) * .5) + .5)),
+      (5 * (window.horizontalZoom * window.horizontalZoom * window.horizontalZoom)) / window.verticalZoom
+    );
 
-      // draw open
-      this.context.fillStyle = 'black';
-      this.context.fillRect(
-        -((n + buffer)) + (((6 * window.horizontalZoom) * .5) + .5) + ((window.horizontalPan)),
-        -(barOpenPos) + (window.verticalPan),
-        -((10 * window.horizontalZoom) + (((6 * window.horizontalZoom) * .5) + .5)),
-        (5 * (window.horizontalZoom * window.horizontalZoom * window.horizontalZoom)) / window.verticalZoom
-      );
+    // draw close
+    this.context.fillStyle = 'black';
+    this.context.fillRect(
+      -((n + buffer)) - (((6 * window.horizontalZoom) * .5) - .5) + ((window.horizontalPan)),
+      -(barClosePos) + (window.verticalPan),
+      ((10 * window.horizontalZoom) + (((6 * window.horizontalZoom) * .5) - .5)),
+      (5 * (window.horizontalZoom * window.horizontalZoom * window.horizontalZoom)) / window.verticalZoom
+    );
 
-      // draw close
-      this.context.fillStyle = 'black';
-      this.context.fillRect(
-        -((n + buffer)) - (((6 * window.horizontalZoom) * .5) - .5) + ((window.horizontalPan)),
-        -(barClosePos) + (window.verticalPan),
-        ((10 * window.horizontalZoom) + (((6 * window.horizontalZoom) * .5) - .5)),
-        (5 * (window.horizontalZoom * window.horizontalZoom * window.horizontalZoom)) / window.verticalZoom
-      );
+    this.context.restore();
 
-      this.context.restore();
-
-      i++;
-      this.BarData(n + offset, yPos, vRange, i)
-    // }
-
+    i++;
+    this.BarData(n + offset, yPos, vRange, i);
   }
-  // var barDisplay = new BarData();
 
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   // process date info from bar data
@@ -236,156 +227,140 @@ export default class chartCanvas {
   }
 
   MonthYear (n, date, i) {
-    // var self = this;
-    // var i = 0;
-
     const color = '#000';
-    // self.x = 0;
-    // self.y = 0;
     const buffer = 30;
     const offset = 40;
 
-    // self.draw = function (n, date) {
-      if (i >= this.priceData.length - 1) {
-        i = 0;
-        return;
-      }
-      if (((n + buffer) * window.horizontalZoom) > (this.canvasWidth) + (window.horizontalPan * window.horizontalZoom)) {
-        i = 0;
-        return;
-      }
+    if (i >= this.priceData.length - 1) {
+      i = 0;
+      return;
+    }
+    if (((n + buffer) * window.horizontalZoom) > (this.canvasWidth) + (window.horizontalPan * window.horizontalZoom)) {
+      i = 0;
+      return;
+    }
 
-      if (date(this.priceData[i].Date).month != date(this.priceData[i + 1].Date).month) {
-        this.context.font = 'normal ' + 20 + 'px Arial';
-        this.context.textAlign = 'center';
-        this.context.textBaseline = 'middle';
-        this.context.fillStyle = color;
-        this.context.fillText(
-          date(this.priceData[i].Date).month,
-          -(((n + buffer) * window.horizontalZoom) - (window.horizontalPan * window.horizontalZoom)),
-          -20
-        );
-      }
+    if (date(this.priceData[i].Date).month != date(this.priceData[i + 1].Date).month) {
+      this.context.font = 'normal ' + 20 + 'px Arial';
+      this.context.textAlign = 'center';
+      this.context.textBaseline = 'middle';
+      this.context.fillStyle = color;
+      this.context.fillText(
+        date(this.priceData[i].Date).month,
+        -(((n + buffer) * window.horizontalZoom) - (window.horizontalPan * window.horizontalZoom)),
+        -20
+      );
+    }
 
-      i++;
-      this.MonthYear((n + offset), date, i);
-    // }
+    i++;
+    this.MonthYear((n + offset), date, i);
   }
-  // var monthYear = new MonthYear();
 
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   // VERTICAL GRID LINES
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   VerticalLines (n, date, i) {
     var color = '#ccc';
-    // // self.x = 0;
     var y = 0;
     var width = 2;
     var height = -(this.canvasHeight);
-    // var height = this.canvasHeight;
     var buffer = 30;
     var offset = 40;
-    // self.draw = function (n, date) {
-      if (i >= this.priceData.length - 1) {
-        i = 0;
-        return;
-      }
-      if (((n + buffer) * window.horizontalZoom) > (this.canvasWidth) + (window.horizontalPan * window.horizontalZoom)) {
-        i = 0;
-        return;
-      }
+    
+    if (i >= this.priceData.length - 1) {
+      i = 0;
+      return;
+    }
+    if (((n + buffer) * window.horizontalZoom) > (this.canvasWidth) + (window.horizontalPan * window.horizontalZoom)) {
+      i = 0;
+      return;
+    }
 
-      if (date(this.priceData[i].Date).week != date(this.priceData[i + 1].Date).week || i === 0) {
-        this.context.save();
-        this.context.beginPath();
+    if (date(this.priceData[i].Date).week != date(this.priceData[i + 1].Date).week || i === 0) {
+      this.context.save();
+      this.context.beginPath();
 
-        this.context.translate(window.horizontalPan, 0);
-        this.context.translate(-(window.horizontalPan), 0)
-        this.context.scale((window.horizontalZoom), 1);
-        this.context.translate((window.horizontalPan), 0)
-        
-        this.context.fillStyle = color;
-        this.context.rect(
-          -((n + buffer)),
-          y,
-          width / window.horizontalZoom,
-          height
-        );
-        this.context.fill();
-        this.context.restore();
-      }
+      this.context.translate(window.horizontalPan, 0);
+      this.context.translate(-(window.horizontalPan), 0)
+      this.context.scale((window.horizontalZoom), 1);
+      this.context.translate((window.horizontalPan), 0)
+      
+      this.context.fillStyle = color;
+      this.context.rect(
+        -((n + buffer)),
+        y,
+        width / window.horizontalZoom,
+        height
+      );
+      this.context.fill();
+      this.context.restore();
+    }
 
-      if (date(this.priceData[i].Date).month != date(this.priceData[i + 1].Date).month) {
-        this.context.save();
-        this.context.beginPath();
+    if (date(this.priceData[i].Date).month != date(this.priceData[i + 1].Date).month) {
+      this.context.save();
+      this.context.beginPath();
 
-        this.context.translate(window.horizontalPan, 0);
-        this.context.translate(-(window.horizontalPan), 0)
-        this.context.scale((window.horizontalZoom), 1);
-        this.context.translate((window.horizontalPan), 0)
+      this.context.translate(window.horizontalPan, 0);
+      this.context.translate(-(window.horizontalPan), 0)
+      this.context.scale((window.horizontalZoom), 1);
+      this.context.translate((window.horizontalPan), 0)
 
-        this.context.fillStyle = color;
-        this.context.fillRect(
-          // -((n + buffer) - window.horizontalPan),
-          -((n + buffer)),
-          y,
-          width / window.horizontalZoom,
-          height
-        );
-        this.context.restore();
-      }
+      this.context.fillStyle = color;
+      this.context.fillRect(
+        // -((n + buffer) - window.horizontalPan),
+        -((n + buffer)),
+        y,
+        width / window.horizontalZoom,
+        height
+      );
+      this.context.restore();
+    }
 
-      i++;
-      this.VerticalLines((n + offset), date, i);
-      // self.draw((n + self.offset), date);
-    // }
+    i++;
+    this.VerticalLines((n + offset), date, i);
   }
-  // var vLines = new VerticalLines();
 
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   // CHART border
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   ChartBorder () {
     var color = 'black';
-      // self.draw = function () {
       
-      this.context.beginPath();
-      this.context.fillStyle = color;
-      this.context.rect(
-        -(this.canvasWidth),
-        -(this.canvasHeight),
-        this.canvasWidth,
-        2
-      );
-      this.context.fill();
+    this.context.beginPath();
+    this.context.fillStyle = color;
+    this.context.rect(
+      -(this.canvasWidth),
+      -(this.canvasHeight),
+      this.canvasWidth,
+      2
+    );
+    this.context.fill();
 
-      this.context.beginPath();
-      this.context.fillStyle = color;
-      this.context.rect(
-        -2,
-        -(this.canvasHeight),
-        2,
-        this.canvasHeight
-      );
-      this.context.fill();
+    this.context.beginPath();
+    this.context.fillStyle = color;
+    this.context.rect(
+      -2,
+      -(this.canvasHeight),
+      2,
+      this.canvasHeight
+    );
+    this.context.fill();
 
-      this.context.beginPath();
-      this.context.fillStyle = color;
-      this.context.rect(
-        0,
-        -2,
-        -(this.canvasWidth),
-        2
-      );
-      this.context.fill();
+    this.context.beginPath();
+    this.context.fillStyle = color;
+    this.context.rect(
+      0,
+      -2,
+      -(this.canvasWidth),
+      2
+    );
+    this.context.fill();
 
-      this.context.beginPath();
-      this.context.fillStyle = color;
-      this.context.rect(-(this.canvasWidth), 0, 2, -(this.canvasHeight));
-      this.context.fill();
-    // }
+    this.context.beginPath();
+    this.context.fillStyle = color;
+    this.context.rect(-(this.canvasWidth), 0, 2, -(this.canvasHeight));
+    this.context.fill();
   }
-  // var chartBorder = new ChartBorder();
 
   // function VerticalMidPoint () {
   //   var self = this;
@@ -426,170 +401,114 @@ export default class chartCanvas {
       )
     }
   }
-  // var hMidPoint = new HorizontalMidPoint();
 
-  // function HorizontalLines () {
-  //   var self = this;
-  //   self.color = '#aaaaaa';
-  //   self.x = 0;
-  //   self.y = 0;
-  //   self.width = -(chartX);
-  //   self.height = 2;
-  //   self.buffer = 20;
-  //   self.offset = 80;
-  //
-  //   self.draw = function (n) {
-  //     if(-(n) < -(chartY)) {
-  //       return;
-  //     }
-  //
-  //     context.save();
-  //     context.beginPath();
-  //     context.translate(0, -(canvasHeight * .5));
-  //     context.scale(1, window.verticalZoom);
-  //     context.translate(0, canvasHeight * .5);
-  //     context.fillStyle = 'red';
-  //     context.fillRect(
-  //       self.x,
-  //       -(n) + window.verticalPan,
-  //       self.width,
-  //       self.height / window.verticalZoom
-  //     );
-  //     context.restore();
-  //
-  //     self.draw(n + (self.offset));
-  //   }
-  // }
-  // var hLines = new HorizontalLines();
 
   // CURRENT PRICE PLACEMENT
-  YaxisPoint (pointVal, upperVal, lowerVal) {
-    var cHeight = canvasHeight * .9;
+  yAxisPoint (pointVal, upperVal, lowerVal) {
+    var cHeight = this.canvasHeight * .9;
     var valRatio = (pointVal - lowerVal) / (upperVal - lowerVal);
-    this.pos = (cHeight * valRatio) + (canvasHeight * .05);
+    return (cHeight * valRatio) + (this.canvasHeight * .05);
   }
-  // var yPoint = new YaxisPoint(116.44, 130, 100);
 
   // CURRENT PRICE DISPLAY
   CurrentPrice () {
-    var self = this;
-    self.color = 'blue';
-    self.x = 0;
-    self.y = -(yPoint.pos);
-    self.width = -(canvasWidth);
-    self.height = 2;
-    self.draw = function (price) {
-
-      context.save();
-      context.beginPath();
-
-      context.transform(1, 0, 0, window.verticalZoom, 0, -(canvasHeight * .5));
-      context.transform(1, 0, 0, 1, 0, (canvasHeight * .5) - (window.verticalPan));
-
-      context.beginPath();
-      context.fillStyle = self.color;
-      context.fillRect(
-        self.x,
-        self.y + (window.verticalPan + window.verticalPan),
-        self.width,
-        self.height / window.verticalZoom
-      );
-
-      context.restore();
-    }
-  }
-  // var cPrice = new CurrentPrice();
-
-  upperHorizontalLines (n = ((this.canvasHeight/this.hGridLines)/2)/1) {
-    // var self = this;
-    const color = '#cccccc';
+    const color = 'red';
     const x = 0;
-    // self.y = 0;
+    const y = -(this.yAxisPoint(this.priceData[0].Close, this.chartUpperVal, this.chartLowerVal));
     const width = -(this.canvasWidth);
     const height = 2;
-    // self.buffer = 20;
+
+    this.context.save();
+    this.context.beginPath();
+
+    this.context.transform(1, 0, 0, window.verticalZoom, 0, -(this.canvasHeight * .5));
+    this.context.transform(1, 0, 0, 1, 0, (this.canvasHeight * .5) - (window.verticalPan));
+
+    this.context.beginPath();
+    this.context.fillStyle = color;
+    this.context.fillRect(
+      x,
+      y + (window.verticalPan + window.verticalPan),
+      width,
+      height / window.verticalZoom
+    );
+
+    this.context.restore();
+  }
+
+  upperHorizontalLines (n = ((this.canvasHeight/this.hGridLines)/2)/1) {
+    const color = '#cccccc';
+    const x = 0;
+    const width = -(this.canvasWidth);
+    const height = 2;
     const offset = this.canvasHeight / this.hGridLines;
     let offsetScale = 1;
     const midPoint = this.canvasHeight * .5;
 
-    // self.drawUpper = function (n, color) {
-      if(n * window.verticalZoom > (this.canvasHeight * .5) + (window.verticalPan * window.verticalZoom)) {
-
-        if (window.verticalZoom <= .5) {
-          offsetScale = .5;
-        }
-        if (window.verticalZoom > .5) {
-          offsetScale = 1;
-        }
-
-        return;
+    if(n * window.verticalZoom > (this.canvasHeight * .5) + (window.verticalPan * window.verticalZoom)) {
+      if (window.verticalZoom <= .5) {
+        offsetScale = .5;
       }
+      if (window.verticalZoom > .5) {
+        offsetScale = 1;
+      }
+      return;
+    }
 
-      this.context.save();
-      this.context.beginPath();
+    this.context.save();
+    this.context.beginPath();
 
-      this.context.transform(1, 0, 0, window.verticalZoom, 0, -(this.canvasHeight * .5));
-      this.context.transform(1, 0, 0, 1, 0, (this.canvasHeight * .5) - (window.verticalPan));
+    this.context.transform(1, 0, 0, window.verticalZoom, 0, -(this.canvasHeight * .5));
+    this.context.transform(1, 0, 0, 1, 0, (this.canvasHeight * .5) - (window.verticalPan));
 
-      // context.translate(0, -(canvasHeight * .5));
-      // context.scale(1, window.verticalZoom);
-      // context.translate(0, canvasHeight * .5);
+    // context.translate(0, -(canvasHeight * .5));
+    // context.scale(1, window.verticalZoom);
+    // context.translate(0, canvasHeight * .5);
 
-      this.context.fillStyle = color;
-      this.context.fillRect(
-        x,
-        -(midPoint + n) + (window.verticalPan + window.verticalPan),
-        width,
-        height / window.verticalZoom
-      );
+    this.context.fillStyle = color;
+    this.context.fillRect(
+      x,
+      -(midPoint + n) + (window.verticalPan + window.verticalPan),
+      width,
+      height / window.verticalZoom
+    );
+    this.context.restore();
 
-      this.context.restore();
-      // console.log('n:', n, self.offset, canvasHeight)
-      this.upperHorizontalLines(n + (offset / offsetScale));
-
-    // }
+    this.upperHorizontalLines(n + (offset / offsetScale));
   }
 
   lowerHorizontalLines (n = ((this.canvasHeight/this.hGridLines)/2)/1) {
-    // var self = this;
     const color = '#cccccc';
     const x = 0;
-    // self.y = 0;
     const width = -(this.canvasWidth);
     const height = 2;
-    // self.buffer = 20;
     const offset = this.canvasHeight / this.hGridLines;
     let offsetScale = 1;
     const midPoint = this.canvasHeight * .5;
 
-    // self.drawLower = function (n, color) {
-
-      if (n * window.verticalZoom > (this.canvasHeight * .5) - (window.verticalPan * window.verticalZoom)) {
-        return;
-      }
-
-      this.context.save();
-      this.context.beginPath();
-
-      this.context.transform(1, 0, 0, window.verticalZoom, 0, -(this.canvasHeight * .5));
-      this.context.transform(1, 0, 0, 1, 0, (this.canvasHeight * .5) - (window.verticalPan));
-
-      // context.translate(0, -(canvasHeight * .5));
-      // context.scale(1, window.window.verticalZoom);
-      // context.translate(0, canvasHeight * .5);
-
-      this.context.fillStyle = color;
-      this.context.fillRect(
-        x,
-        -(midPoint - n) + (window.verticalPan + window.verticalPan),
-        width,
-        height / window.verticalZoom
-      );
-
-      this.context.restore();
-
-      this.lowerHorizontalLines(n + (offset / offsetScale));
+    if (n * window.verticalZoom > (this.canvasHeight * .5) - (window.verticalPan * window.verticalZoom)) {
+      return;
     }
-  // }
-  // context.translate(canvasWidth, canvasHeight);
+
+    this.context.save();
+    this.context.beginPath();
+
+    this.context.transform(1, 0, 0, window.verticalZoom, 0, -(this.canvasHeight * .5));
+    this.context.transform(1, 0, 0, 1, 0, (this.canvasHeight * .5) - (window.verticalPan));
+
+    // context.translate(0, -(canvasHeight * .5));
+    // context.scale(1, window.window.verticalZoom);
+    // context.translate(0, canvasHeight * .5);
+
+    this.context.fillStyle = color;
+    this.context.fillRect(
+      x,
+      -(midPoint - n) + (window.verticalPan + window.verticalPan),
+      width,
+      height / window.verticalZoom
+    );
+    this.context.restore();
+
+    this.lowerHorizontalLines(n + (offset / offsetScale));
+  }
 };

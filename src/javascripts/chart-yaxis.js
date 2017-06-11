@@ -25,10 +25,13 @@ export default function yAxisCanvas (priceData) {
   canvas.style.width = canvasWidth * .5 + 'px';
   canvas.style.height = canvasHeight * .5 + 'px';
 
+
+  let upperVal = 0;
+  let lowerVal = 0;
+
   function pricevalueRangeHandler(e) {
-    // console.log('pricevalueRangeHandler', e.detail);
-    // upperRange = e.detail.chartUpperVal;
-    // lowerRange = e.detail.chartLowerVal;
+    upperVal = e.detail.chartUpperVal;
+    lowerVal = e.detail.chartLowerVal;
     yVals = new YaxisValues(e.detail.chartUpperVal, e.detail.chartLowerVal);
   }
   document.addEventListener('pricevalue:range', pricevalueRangeHandler);
@@ -73,28 +76,24 @@ export default function yAxisCanvas (priceData) {
 
   // CURRENT PRICE PLACEMENT
   var YaxisPoint = function (pointVal, upperVal, lowerVal) {
-    //debugger;
-    var cHeight = canvasHeight * .9;
-    // var valRatio = (pointVal - lowerVal) / (upperVal - lowerVal);
-    var valRatio = pointVal;
+    var cHeight = canvasHeight * .9; //.9
+    var valRatio = (pointVal - lowerVal) / (upperVal - lowerVal);
     this.pos = (cHeight * valRatio) + (canvasHeight * .05);
-
-    //console.log(this.pos)
   }
   // var yPoint = new YaxisPoint(116.44, 130, 100);
-  // the first argument looks like it should be the open of the
-  // first bar's data, the second 2 arguments aren't doing anything
+  // the first argument is the close of the first bar's
+  // data, the second 2 arguments aren't doing anything
   // var yPoint = new YaxisPoint(116.44, 130, 100);
-  var yPoint = new YaxisPoint(2201.7, 130, 100);
+  var yPoint = new YaxisPoint(2880.08, 2933, 1141);
 
   // CURRENT PRICE DISPLAY
   function CurrentPrice () {
     var self = this;
-    self.color = 'blue';
+    self.color = 'red';
     self.x = 0;
     self.y = -(yPoint.pos);
     self.width = -(canvasWidth);
-    self.height = 2;
+    self.height = 40;
     self.draw = function (price) {
 
       context.save();
@@ -107,11 +106,20 @@ export default function yAxisCanvas (priceData) {
       context.fillStyle = self.color;
       context.fillRect(
         self.x,
-        self.y + (verticalPan + verticalPan),
+        self.y + (verticalPan + verticalPan) -20,
         self.width,
         self.height / verticalZoom
       );
 
+      context.beginPath();
+      context.font = 'normal ' + 20 + 'px Arial';
+      context.textBaseline = 'middle';
+      context.fillStyle = 'white';
+      context.fillText(
+        (priceData[0].Close).toFixed(2),
+        self.width + 20,
+        self.y + (verticalPan + verticalPan)
+      );
       context.restore();
     }
   }
@@ -190,6 +198,7 @@ export default function yAxisCanvas (priceData) {
 
   // DISPLAY VALUES >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   // these values relate to 18 and 10 grid lines respectivly
+  // TODO: use constant hGridLInes
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   var YaxisValues = function (high, low) {
     this.range = high - low;
@@ -414,7 +423,7 @@ export default function yAxisCanvas (priceData) {
 
     hLines.drawUpper((hLines.offset / 2) / hLines.offsetScale, 'lightblue');
     hLines.drawLower((hLines.offset / 2) / hLines.offsetScale, 'lightblue');
-    //cPrice.draw();
+    cPrice.draw();
 
   }
 
