@@ -1,9 +1,9 @@
 import moment from 'moment';
-// import yAxisCanvas from 'javascripts/chart-yaxis';
 
 // TODO: create a StockChart class and extend all other classes from it!
-// ie: the x and y axis should be extended from StockCart
-
+// ie: the x and y axis charts should be extended from StockCart
+// figure out what the classes have in common pull that out into a base class
+// and extend the rest
 
 export default class StockChart {
   constructor(priceData) {

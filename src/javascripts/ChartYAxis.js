@@ -52,56 +52,21 @@ export default class ChartYAxis {
     this.canvas.setAttribute('height', this.canvasHeight);
 
     this.canvas.style.width = this.canvasWidth * .5 + 'px';
-    this.canvas.style.height = this.canvasHeight * .5 + 'px'
-
-    // this.canvas.style.border = '1px solid red';
-    // this.context.translate(this.canvasWidth, this.canvasHeight);
+    this.canvas.style.height = this.canvasHeight * .5 + 'px';
   }
 
-  // // CANVAS REFRESH LOOP
-  // var loopCount = 0;
-  // function loop () {
-  //   //console.log('loop');
-  //   // if (loopCount === 1000) {
-  //   //   console.log('canvas loop stopped!');
-  //   //   return;
-  //   // }
-
-  //   var now = window.Date.now();
-
-  //   if (lastUpdate) {
-  //     var elapsed = (now-lastUpdate) / 1000;
-  //     lastUpdate = now;
-
-  //     update(elapsed);
-  //     render();
-  //   } else {
-  //     lastUpdate = now;
-  //   }
-
-  //   loopCount++;
-  //   window.requestAnimationFrame(loop);
-  // }
-  // window.requestAnimationFrame(loop);
-
   // CURRENT PRICE PLACEMENT
+  // currentClose, upperRangeVal, lowerRangeVal
   YaxisPoint(pointVal, upperVal, lowerVal) {
     const cHeight = this.canvasHeight * 0.9; // 0.9
     const valRatio = (pointVal - lowerVal) / (upperVal - lowerVal);
     return (cHeight * valRatio) + (this.canvasHeight * 0.05);
   }
-  // var yPoint = new YaxisPoint(116.44, 130, 100);
-  // the first argument is the close of the first bar's
-  // data, the second 2 arguments aren't doing anything
-  // var yPoint = new YaxisPoint(116.44, 130, 100);
-  // var yPoint = new YaxisPoint(2880.08, 2933, 1141);
 
   // CURRENT PRICE DISPLAY
   CurrentPrice(price) {
-    // debugger;
     const color = 'red';
     const x = 0;
-    // const y = -(this.YaxisPoint(2880.08, 2933, 1141));
     const y = -(this.YaxisPoint(this.priceData[0].Close, this.upperVal, this.lowerVal));
     const width = -(this.canvasWidth);
     const height = 40;
@@ -133,7 +98,6 @@ export default class ChartYAxis {
     this.context.restore();
   }
 
-
   HorizontalUpperRange() {
     var self = this;
     self.color = '#aaaaaa';
@@ -152,7 +116,6 @@ export default class ChartYAxis {
       );
     }
   }
-  // var hUpperRange = new HorizontalUpperRange();
 
   HorizontalMidPoint () {
     var self = this;
@@ -172,7 +135,6 @@ export default class ChartYAxis {
       );
     }
   }
-  // var hMidPoint = new HorizontalMidPoint();
 
   HorizontalLowerRange () {
     var self = this;
@@ -192,17 +154,6 @@ export default class ChartYAxis {
       );
     }
   }
-  // var hLowerRange = new HorizontalLowerRange();
-
-  //.log(priceData[0]);
-  // var i = 0;
-  // function getRange () {
-
-  //   //priceData[i];
-
-  //   i++
-  // }
-
 
   // DISPLAY VALUES >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   // these values relate to 18 and 10 grid lines respectivly
@@ -228,12 +179,6 @@ export default class ChartYAxis {
       offset,
     };
   }
-  //TODO: add dynamic values
-  // var yVals = new YaxisValues(138, 87); //133. 92
-  // high range / low range
-  // var yVals = new YaxisValues(2764.5, 1013.5); //133. 92
-  // console.log(upperRange, lowerRange);
-  // var yVals = new YaxisValues(upperRange, lowerRange); //133. 92
 
   upperHorizontalLines(n = ((this.canvasHeight / this.hGridLines) / 2) / 1, hVal = this.yVals.highStart) {
     const color = '#cccccc';
@@ -348,29 +293,6 @@ export default class ChartYAxis {
     lowerVal -= (this.yVals.offset * yValsScale);
     this.lowerHorizontalLines(n + (offset / offsetScale), lowerVal);
   }
-
-  // function update (elapsed) {
-
-  // }
-
-  // function render () {
-  //   context.clearRect(0, 0, -(canvasWidth), -(canvasHeight));
-
-  //   //hLines.draw(0);
-  //   //scale.draw();
-
-  //   // hUpperRange.draw();
-  //   // hMidPoint.draw();
-  //   // hLowerRange.draw()
-
-  //   hLines.drawUpper((hLines.offset / 2) / hLines.offsetScale, 'lightblue');
-  //   hLines.drawLower((hLines.offset / 2) / hLines.offsetScale, 'lightblue');
-  //   cPrice.draw();
-
-  // }
-
-  // context.translate(canvasWidth, canvasHeight);
-
 }
 
 // non split approach
