@@ -14,15 +14,13 @@ export default class ChartYAxis {
     this.canvasHeight = this.containerRect.height * 2;
 
     this.hGridLines = 10;
-    this.upperRange = 0;
-    this.lowerRange = 0;
+    this.upperVal = 0;
+    this.lowerVal = 0;
     this.yVals = {
       highStart: 0,
       lowStart: 0,
       offset: 0,
     };
-    this.upperVal = 0;
-    this.lowerVal = 0;
 
     this.canvas.setAttribute('width', this.canvasWidth);
     this.canvas.setAttribute('height', this.canvasHeight);
@@ -51,8 +49,8 @@ export default class ChartYAxis {
     this.canvas.setAttribute('width', this.canvasWidth);
     this.canvas.setAttribute('height', this.canvasHeight);
 
-    this.canvas.style.width = this.canvasWidth * .5 + 'px';
-    this.canvas.style.height = this.canvasHeight * .5 + 'px';
+    this.canvas.style.width = `${this.canvasWidth * 0.5}px`;
+    this.canvas.style.height = `${this.canvasHeight * 0.5}px`;
   }
 
   // CURRENT PRICE PLACEMENT
@@ -64,7 +62,7 @@ export default class ChartYAxis {
   }
 
   // CURRENT PRICE DISPLAY
-  CurrentPrice(price) {
+  CurrentPrice() {
     const color = 'red';
     const x = 0;
     const y = -(this.YaxisPoint(this.priceData[0].Close, this.upperVal, this.lowerVal));
@@ -81,13 +79,13 @@ export default class ChartYAxis {
     this.context.fillStyle = color;
     this.context.fillRect(
       x,
-      y + (window.verticalPan + window.verticalPan) - 20,
+      (y + (window.verticalPan + window.verticalPan)) - 20,
       width,
       height / window.verticalZoom,
     );
 
     this.context.beginPath();
-    this.context.font = 'normal ' + 20 + 'px Arial';
+    this.context.font = 'normal 20px Arial';
     this.context.textBaseline = 'middle';
     this.context.fillStyle = 'white';
     this.context.fillText(
@@ -99,60 +97,54 @@ export default class ChartYAxis {
   }
 
   HorizontalUpperRange() {
-    var self = this;
-    self.color = '#aaaaaa';
-    self.x = 0;
-    self.y = -(canvasHeight * .95);
-    self.width = -(canvasWidth);
-    self.height = 1.5;
-    self.draw = function () {
-      context.beginPath();
-      context.fillStyle = 'lightblue';
-      context.fillRect(
-        self.x,
-        self.y,
-        self.width,
-        self.height
-      );
-    }
+    const color = 'lightblue';
+    const x = 0;
+    const y = -(this.canvasHeight * 0.95);
+    const width = -(this.canvasWidth);
+    const height = 1.5;
+
+    this.context.beginPath();
+    this.context.fillStyle = color;
+    this.context.fillRect(
+      x,
+      y,
+      width,
+      height,
+    );
   }
 
-  HorizontalMidPoint () {
-    var self = this;
-    self.color = '#aaaaaa';
-    self.x = 0;
-    self.y = -(canvasHeight * .5);
-    self.width = -(canvasWidth);
-    self.height = 2;
-    self.draw = function () {
-      context.beginPath();
-      context.fillStyle = 'lightblue';
-      context.fillRect(
-        self.x,
-        self.y,
-        self.width,
-        self.height
-      );
-    }
+  HorizontalMidPoint() {
+    const color = 'lightblue';
+    const x = 0;
+    const y = -(this.canvasHeight * 0.5);
+    const width = -(this.canvasWidth);
+    const height = 2;
+
+    this.context.beginPath();
+    this.context.fillStyle = color;
+    this.context.fillRect(
+      x,
+      y,
+      width,
+      height,
+    );
   }
 
-  HorizontalLowerRange () {
-    var self = this;
-    self.color = '#aaaaaa';
-    self.x = 0;
-    self.y = -(canvasHeight * .05);
-    self.width = -(canvasWidth);
-    self.height = 1.5;
-    self.draw = function () {
-      context.beginPath();
-      context.fillStyle = 'lightblue';
-      context.fillRect(
-        self.x,
-        self.y,
-        self.width,
-        self.height
-      );
-    }
+  HorizontalLowerRange() {
+    const color = 'lightblue';
+    const x = 0;
+    const y = -(this.canvasHeight * 0.5);
+    const width = -(this.canvasWidth);
+    const height = 1.5;
+
+    this.context.beginPath();
+    this.context.fillStyle = color;
+    this.context.fillRect(
+      x,
+      y,
+      width,
+      height,
+    );
   }
 
   // DISPLAY VALUES >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -187,7 +179,7 @@ export default class ChartYAxis {
     const height = 2;
     const offset = this.canvasHeight / this.hGridLines;
     let offsetScale = 1;
-    const midPoint = this.canvasHeight * .5;
+    const midPoint = this.canvasHeight * 0.5;
     let highVal = hVal;
     let yValsScale = 1;
 
@@ -224,13 +216,13 @@ export default class ChartYAxis {
     this.context.restore();
 
     this.context.beginPath();
-    this.context.font = 'normal ' + 20 + 'px Arial';
+    this.context.font = 'normal 20px Arial';
     this.context.textBaseline = 'middle';
     this.context.fillStyle = 'black';
     this.context.fillText(
       (highVal).toFixed(2),
       -(this.canvasWidth - 20),
-      -((n * window.verticalZoom) + midPoint - (window.verticalPan * window.verticalZoom))
+      -((n * window.verticalZoom) + (midPoint - (window.verticalPan * window.verticalZoom))),
     );
 
     highVal = (+(highVal) + +(this.yVals.offset * yValsScale));
@@ -252,13 +244,13 @@ export default class ChartYAxis {
       lowerVal = +(this.yVals.lowStart);
 
       if (window.verticalZoom <= 0.5) {
-        //self.offsetScale = .5;
-        //self.yValsScale = 2;
+        // self.offsetScale = .5;
+        // self.yValsScale = 2;
         lowerVal -= (this.yVals.offset * 0.5);
       }
       if (window.verticalZoom > 0.5) {
-        //self.offsetScale = 1;
-        //self.yValsScale = 1;
+        // self.offsetScale = 1;
+        // self.yValsScale = 1;
         self.lowerVal = this.yVals.lowStart;
       }
       return;
@@ -281,13 +273,13 @@ export default class ChartYAxis {
     this.context.restore();
 
     this.context.beginPath();
-    this.context.font = 'normal ' + 20 + 'px Arial';
+    this.context.font = 'normal 20px Arial';
     this.context.textBaseline = 'middle';
     this.context.fillStyle = 'black';
     this.context.fillText(
       (lowerVal).toFixed(2),
       -(this.canvasWidth - 20),
-      ((n * window.verticalZoom) - midPoint + (window.verticalPan * window.verticalZoom))
+      ((n * window.verticalZoom) - (midPoint + (window.verticalPan * window.verticalZoom))),
     );
 
     lowerVal -= (this.yVals.offset * yValsScale);

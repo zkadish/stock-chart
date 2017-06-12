@@ -1,5 +1,5 @@
 
-function startChart(chart, yaxis) {
+function startChart(chart, yaxis, xaxis) {
   function render() {
     // StockChart
     chart.context.translate(chart.canvasWidth, chart.canvasHeight);
@@ -25,7 +25,7 @@ function startChart(chart, yaxis) {
     // yAxisChart
     yaxis.context.translate(yaxis.canvasWidth, yaxis.canvasHeight);
     yaxis.context.restore();
-    yaxis.context.clearRect(0, 0, -(chart.canvasWidth), -(chart.canvasHeight));
+    yaxis.context.clearRect(0, 0, -(yaxis.canvasWidth), -(yaxis.canvasHeight));
     yaxis.context.save();
 
     yaxis.context.save();
@@ -33,15 +33,25 @@ function startChart(chart, yaxis) {
     yaxis.lowerHorizontalLines();
     yaxis.CurrentPrice();
     yaxis.context.restore();
+
+    // yAxisChart
+    xaxis.context.translate(xaxis.canvasWidth, xaxis.canvasHeight);
+    xaxis.context.restore();
+    xaxis.context.clearRect(0, 0, -(xaxis.canvasWidth), -(xaxis.canvasHeight));
+    xaxis.context.save();
+
+    xaxis.context.save();
+    xaxis.verticalLines(0, xaxis.processDate, 0);
+    xaxis.context.restore();
   }
 
   // This fuction uses request animaiton frame to create a render loop
   // for all drawn elements in the canvas.
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  function update (elapsed) {
+  function update(elapsed) {
       // UPDATE VALUES
   }
-  let loopCount = 0;
+  // let loopCount = 0;
   let lastUpdate = null;
 
   function loop() {
@@ -52,19 +62,18 @@ function startChart(chart, yaxis) {
     //   return;
     // }
 
-    var now = window.Date.now();
+    const now = window.Date.now();
 
     if (lastUpdate) {
-      var elapsed = (now-lastUpdate) / 1000;
+      const elapsed = (now - lastUpdate) / 1000;
       lastUpdate = now;
-
       update(elapsed);
       render();
     } else {
       lastUpdate = now;
     }
 
-    loopCount++;
+    // loopCount += 1;
     window.requestAnimationFrame(loop);
   }
   window.requestAnimationFrame(loop);
