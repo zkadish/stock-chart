@@ -1,6 +1,21 @@
 
 export default class ChartYAxis {
-  constructor(priceData) {
+  constructor(priceData, currentPrice) {
+    // set current price initial value
+    this.currentPrice = { USD: { rate_float: 0 } };
+    currentPrice('USD').then((data) => {
+      console.log('initial data', data);
+      this.currentPrice = data;
+    });
+
+    // update current value every 30 secons
+    setInterval(() => {
+      currentPrice('USD').then((data) => {
+        this.currentPrice = data;
+      });
+      console.log(this.currentPrice);
+    }, 60000);
+
     this.priceData = priceData;
     this.canvasContainer = document.querySelector('.yaxis-container');
     this.containerRect = this.canvasContainer.getBoundingClientRect();
@@ -65,7 +80,8 @@ export default class ChartYAxis {
   CurrentPrice() {
     const color = 'red';
     const x = 0;
-    const y = -(this.YaxisPoint(this.priceData[0].Close, this.upperVal, this.lowerVal));
+    // const y = -(this.YaxisPoint(this.priceData[0].Close, this.upperVal, this.lowerVal));
+    const y = -(this.YaxisPoint(this.currentPrice.USD.rate_float, this.upperVal, this.lowerVal));
     const width = -(this.canvasWidth);
     const height = 40;
 
@@ -89,9 +105,10 @@ export default class ChartYAxis {
     this.context.textBaseline = 'middle';
     this.context.fillStyle = 'white';
     this.context.fillText(
-      (this.priceData[0].Close).toFixed(2),
+      // (this.priceData[0].Close).toFixed(2),
+      (this.currentPrice.USD.rate_float).toFixed(2),
       width + 20,
-      y + (window.verticalPan + window.verticalPan)
+      y + (window.verticalPan + window.verticalPan),
     );
     this.context.restore();
   }

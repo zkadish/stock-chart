@@ -37,6 +37,12 @@ document.addEventListener('window:onresize', windowOnResizeHandler, false);
 
 // fetch('https://www.quandl.com/api/v3/datasets/WIKI/aapl/data.json?limit=100&end_date=&api_key=wHW3yQNffR6nKooC_ZhJ', {
 
+function currentPrice(currencies) {
+  return fetch(`http://api.coindesk.com/v1/bpi/currentprice/${currencies}.json`, {
+    method: 'GET',
+  }).then(response => response.json()).then(json => json.bpi);
+}
+
 fetch('https://www.quandl.com/api/v3/datasets/BCHARTS/BITSTAMPUSD.json?limit=100&end_date=&api_key=wHW3yQNffR6nKooC_ZhJ', {
   method: 'GET',
 }).then((response) => {
@@ -54,8 +60,8 @@ fetch('https://www.quandl.com/api/v3/datasets/BCHARTS/BITSTAMPUSD.json?limit=100
       Volume: d[5],
     };
   });
-  const stockChart = new StockChart(priceData);
-  const chartYAxis = new ChartYAxis(priceData);
+  const stockChart = new StockChart(priceData, currentPrice);
+  const chartYAxis = new ChartYAxis(priceData, currentPrice);
   const chartXAxis = new ChartXAxis(priceData);
 
   chartLoop(stockChart, chartYAxis, chartXAxis);

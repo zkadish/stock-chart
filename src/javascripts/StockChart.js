@@ -6,7 +6,23 @@ import moment from 'moment';
 // and extend the rest
 
 export default class StockChart {
-  constructor(priceData) {
+  constructor(priceData, currentPrice) {
+    // set current price initial value
+    this.currentPrice = { USD: { rate_float: 0 } };
+    currentPrice('USD').then((data) => {
+      // console.log('initial data', data);
+      this.currentPrice = data;
+    });
+
+    // update current value every 30 secons
+    setInterval(() => {
+      // console.log('get current price', this);
+      currentPrice('USD').then((data) => {
+        this.currentPrice = data;
+      });
+      // console.log(this.currentPrice);
+    }, 30000);
+
     this.priceData = priceData;
     this.canvasContainer = document.querySelector('.chart-container');
 
@@ -161,7 +177,10 @@ export default class StockChart {
     const barHighPos = yPos(this.priceData[i].High, this.chartUpperVal, this.chartLowerVal);
     const barLowPos = yPos(this.priceData[i].Low, this.chartUpperVal, this.chartLowerVal);
     const barOpenPos = yPos(this.priceData[i].Open, this.chartUpperVal, this.chartLowerVal);
-    const barClosePos = yPos(this.priceData[i].Close, this.chartUpperVal, this.chartLowerVal);
+    let barClosePos = yPos(this.priceData[i].Close, this.chartUpperVal, this.chartLowerVal);
+    if (i === 0) {
+      barClosePos = yPos(this.currentPrice.USD.rate_float, this.chartUpperVal, this.chartLowerVal);      
+    }
 
     this.context.save();
     this.context.beginPath();
@@ -408,7 +427,8 @@ export default class StockChart {
   CurrentPrice() {
     const color = 'red';
     const x = 0;
-    const y = -(this.yAxisPoint(this.priceData[0].Close, this.chartUpperVal, this.chartLowerVal));
+    // const y = -(this.yAxisPoint(this.priceData[0].Close, this.chartUpperVal, this.chartLowerVal));
+    const y = -(this.yAxisPoint(this.currentPrice.USD.rate_float, this.chartUpperVal, this.chartLowerVal));
     const width = -(this.canvasWidth);
     const height = 2;
 
