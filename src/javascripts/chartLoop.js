@@ -13,13 +13,13 @@ function startChart(chart, yaxis, xaxis) {
     // chart.context.fill();
 
     chart.context.save();
-    chart.ChartBorder();
     chart.VerticalLines(0, chart.processDate, 0);
-    chart.MonthYear(0, chart.processDate, 0);
     chart.upperHorizontalLines();
     chart.lowerHorizontalLines();
-    chart.CurrentPrice();
     chart.BarData(0, chart.yPointPos, chart.valueRange, 0);
+    chart.CurrentPrice();
+    chart.MonthYear(0, chart.processDate, 0);
+    chart.ChartBorder();
     chart.context.restore();
 
     // yAxisChart
@@ -34,7 +34,7 @@ function startChart(chart, yaxis, xaxis) {
     yaxis.CurrentPrice();
     yaxis.context.restore();
 
-    // yAxisChart
+    // xAxisChart
     xaxis.context.translate(xaxis.canvasWidth, xaxis.canvasHeight);
     xaxis.context.restore();
     xaxis.context.clearRect(0, 0, -(xaxis.canvasWidth), -(xaxis.canvasHeight));

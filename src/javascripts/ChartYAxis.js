@@ -4,7 +4,6 @@ export default class ChartYAxis {
     // set current price initial value
     this.currentPrice = { USD: { rate_float: 0 } };
     currentPrice('USD').then((data) => {
-      console.log('initial data', data);
       this.currentPrice = data;
     });
 
@@ -13,7 +12,6 @@ export default class ChartYAxis {
       currentPrice('USD').then((data) => {
         this.currentPrice = data;
       });
-      console.log(this.currentPrice);
     }, 60000);
 
     this.priceData = priceData;
@@ -78,12 +76,13 @@ export default class ChartYAxis {
 
   // CURRENT PRICE DISPLAY
   CurrentPrice() {
-    const color = 'red';
+    const bgColor = 'red';
+    const fgColor = 'white';
     const x = 0;
-    // const y = -(this.YaxisPoint(this.priceData[0].Close, this.upperVal, this.lowerVal));
     const y = -(this.YaxisPoint(this.currentPrice.USD.rate_float, this.upperVal, this.lowerVal));
     const width = -(this.canvasWidth);
     const height = 40;
+    const midPoint = this.canvasHeight * 0.5;
 
     this.context.save();
     this.context.beginPath();
@@ -92,76 +91,28 @@ export default class ChartYAxis {
     this.context.transform(1, 0, 0, 1, 0, (this.canvasHeight * 0.5) - (window.verticalPan));
 
     this.context.beginPath();
-    this.context.fillStyle = color;
+    this.context.fillStyle = bgColor;
     this.context.fillRect(
       x,
-      (y + (window.verticalPan + window.verticalPan)) - 20,
+      (y + (window.verticalPan * 2)) - (20 / window.verticalZoom),
       width,
-      height / window.verticalZoom,
-    );
-
-    this.context.beginPath();
-    this.context.font = 'normal 20px Arial';
-    this.context.textBaseline = 'middle';
-    this.context.fillStyle = 'white';
-    this.context.fillText(
-      // (this.priceData[0].Close).toFixed(2),
-      (this.currentPrice.USD.rate_float).toFixed(2),
-      width + 20,
-      y + (window.verticalPan + window.verticalPan),
+      height / (window.verticalZoom),
     );
     this.context.restore();
-  }
 
-  HorizontalUpperRange() {
-    const color = 'lightblue';
-    const x = 0;
-    const y = -(this.canvasHeight * 0.95);
-    const width = -(this.canvasWidth);
-    const height = 1.5;
-
+    this.context.save();
     this.context.beginPath();
-    this.context.fillStyle = color;
-    this.context.fillRect(
-      x,
-      y,
-      width,
-      height,
+    this.context.translate(0, -(this.canvasHeight * 0.5));
+
+    this.context.font = 'normal 20px Arial';
+    this.context.textBaseline = 'middle';
+    this.context.fillStyle = fgColor;
+    this.context.fillText(
+      (this.currentPrice.USD.rate_float).toFixed(2),
+      width + 20,
+      ((y + window.verticalPan) * window.verticalZoom) + (midPoint * window.verticalZoom),
     );
-  }
-
-  HorizontalMidPoint() {
-    const color = 'lightblue';
-    const x = 0;
-    const y = -(this.canvasHeight * 0.5);
-    const width = -(this.canvasWidth);
-    const height = 2;
-
-    this.context.beginPath();
-    this.context.fillStyle = color;
-    this.context.fillRect(
-      x,
-      y,
-      width,
-      height,
-    );
-  }
-
-  HorizontalLowerRange() {
-    const color = 'lightblue';
-    const x = 0;
-    const y = -(this.canvasHeight * 0.5);
-    const width = -(this.canvasWidth);
-    const height = 1.5;
-
-    this.context.beginPath();
-    this.context.fillStyle = color;
-    this.context.fillRect(
-      x,
-      y,
-      width,
-      height,
-    );
+    this.context.restore();
   }
 
   // DISPLAY VALUES >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -200,7 +151,6 @@ export default class ChartYAxis {
     let highVal = hVal;
     let yValsScale = 1;
 
-    // getRange();
     if (n * window.verticalZoom > (this.canvasHeight * 0.5) + (window.verticalPan * window.verticalZoom)) {
       highVal = +(this.yVals.highStart);
       if (window.verticalZoom <= 0.5) {
@@ -218,7 +168,6 @@ export default class ChartYAxis {
 
     this.context.save();
     this.context.beginPath();
-
     this.context.transform(1, 0, 0, window.verticalZoom, 0, -(this.canvasHeight * 0.5));
     this.context.transform(1, 0, 0, 1, 0, (this.canvasHeight * 0.5) - (window.verticalPan));
 
@@ -229,9 +178,9 @@ export default class ChartYAxis {
       width,
       height / window.verticalZoom,
     );
-
     this.context.restore();
 
+    this.context.save();
     this.context.beginPath();
     this.context.font = 'normal 20px Arial';
     this.context.textBaseline = 'middle';
@@ -241,6 +190,7 @@ export default class ChartYAxis {
       -(this.canvasWidth - 20),
       -((n * window.verticalZoom) + (midPoint - (window.verticalPan * window.verticalZoom))),
     );
+    this.context.restore();
 
     highVal = (+(highVal) + +(this.yVals.offset * yValsScale));
     this.upperHorizontalLines(n + (offset / offsetScale), highVal);
@@ -261,13 +211,9 @@ export default class ChartYAxis {
       lowerVal = +(this.yVals.lowStart);
 
       if (window.verticalZoom <= 0.5) {
-        // self.offsetScale = .5;
-        // self.yValsScale = 2;
         lowerVal -= (this.yVals.offset * 0.5);
       }
       if (window.verticalZoom > 0.5) {
-        // self.offsetScale = 1;
-        // self.yValsScale = 1;
         self.lowerVal = this.yVals.lowStart;
       }
       return;
@@ -296,12 +242,63 @@ export default class ChartYAxis {
     this.context.fillText(
       (lowerVal).toFixed(2),
       -(this.canvasWidth - 20),
-      ((n * window.verticalZoom) - (midPoint + (window.verticalPan * window.verticalZoom))),
+      ((n * window.verticalZoom) - (midPoint + (-window.verticalPan * window.verticalZoom))),
     );
 
     lowerVal -= (this.yVals.offset * yValsScale);
     this.lowerHorizontalLines(n + (offset / offsetScale), lowerVal);
   }
+
+  // HorizontalUpperRange() {
+  //   const color = 'lightblue';
+  //   const x = 0;
+  //   const y = -(this.canvasHeight * 0.95);
+  //   const width = -(this.canvasWidth);
+  //   const height = 1.5;
+
+  //   this.context.beginPath();
+  //   this.context.fillStyle = color;
+  //   this.context.fillRect(
+  //     x,
+  //     y,
+  //     width,
+  //     height,
+  //   );
+  // }
+
+  // HorizontalMidPoint() {
+  //   const color = 'lightblue';
+  //   const x = 0;
+  //   const y = -(this.canvasHeight * 0.5);
+  //   const width = -(this.canvasWidth);
+  //   const height = 2;
+
+  //   this.context.beginPath();
+  //   this.context.fillStyle = color;
+  //   this.context.fillRect(
+  //     x,
+  //     y,
+  //     width,
+  //     height,
+  //   );
+  // }
+
+  // HorizontalLowerRange() {
+  //   const color = 'lightblue';
+  //   const x = 0;
+  //   const y = -(this.canvasHeight * 0.5);
+  //   const width = -(this.canvasWidth);
+  //   const height = 1.5;
+
+  //   this.context.beginPath();
+  //   this.context.fillStyle = color;
+  //   this.context.fillRect(
+  //     x,
+  //     y,
+  //     width,
+  //     height,
+  //   );
+  // }
 }
 
 // non split approach

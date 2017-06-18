@@ -21,7 +21,7 @@ export default class StockChart {
         this.currentPrice = data;
       });
       // console.log(this.currentPrice);
-    }, 30000);
+    }, 60000);
 
     this.priceData = priceData;
     this.canvasContainer = document.querySelector('.chart-container');
@@ -174,12 +174,18 @@ export default class StockChart {
 
     vRange(this.priceData[i], this.chartUpperVal, this.chartLowerVal);
 
-    const barHighPos = yPos(this.priceData[i].High, this.chartUpperVal, this.chartLowerVal);
-    const barLowPos = yPos(this.priceData[i].Low, this.chartUpperVal, this.chartLowerVal);
+    let barHighPos = yPos(this.priceData[i].High, this.chartUpperVal, this.chartLowerVal);
+    let barLowPos = yPos(this.priceData[i].Low, this.chartUpperVal, this.chartLowerVal);
     const barOpenPos = yPos(this.priceData[i].Open, this.chartUpperVal, this.chartLowerVal);
     let barClosePos = yPos(this.priceData[i].Close, this.chartUpperVal, this.chartLowerVal);
     if (i === 0) {
-      barClosePos = yPos(this.currentPrice.USD.rate_float, this.chartUpperVal, this.chartLowerVal);      
+      barClosePos = yPos(this.currentPrice.USD.rate_float, this.chartUpperVal, this.chartLowerVal);
+      if (barHighPos < barClosePos) {
+        barHighPos = yPos(this.currentPrice.USD.rate_float, this.chartUpperVal, this.chartLowerVal);        
+      }
+      if (barLowPos > barClosePos) {
+        barLowPos = yPos(this.currentPrice.USD.rate_float, this.chartUpperVal, this.chartLowerVal);        
+      }
     }
 
     this.context.save();
@@ -336,93 +342,6 @@ export default class StockChart {
     this.VerticalLines((n + offset), date, i);
   }
 
-  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  // CHART border
-  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  ChartBorder() {
-    const color = 'black';
-    this.context.beginPath();
-    this.context.fillStyle = color;
-    this.context.rect(
-      -(this.canvasWidth),
-      -(this.canvasHeight),
-      this.canvasWidth,
-      2,
-    );
-    this.context.fill();
-
-    this.context.beginPath();
-    this.context.fillStyle = color;
-    this.context.rect(
-      -2,
-      -(this.canvasHeight),
-      2,
-      this.canvasHeight,
-    );
-    this.context.fill();
-
-    this.context.beginPath();
-    this.context.fillStyle = color;
-    this.context.rect(
-      0,
-      -2,
-      -(this.canvasWidth),
-      2,
-    );
-    this.context.fill();
-
-    this.context.beginPath();
-    this.context.fillStyle = color;
-    this.context.rect(-(this.canvasWidth), 0, 2, -(this.canvasHeight));
-    this.context.fill();
-  }
-
-  // function VerticalMidPoint () {
-  //   var self = this;
-  //   self.color = '#aaaaaa';
-  //   self.x = -(canvasWidth * .5);
-  //   self.y = 0;
-  //   self.width = 2;
-  //   self.height = -(canvasHeight);
-  //   self.draw = function () {
-  //     context.beginPath();
-  //     context.fillStyle = 'black';
-  //     context.rect(
-  //       self.x,
-  //       self.y,
-  //       self.width,
-  //       self.height
-  //     );
-  //     context.fill();
-  //   }
-  // }
-  // var vMidPoint = new VerticalMidPoint();
-
-  HorizontalMidPoint() {
-    const color = 'lightblue';
-    const x = 0;
-    const y = -(this.canvasHeight * 0.5);
-    const width = -(this.canvasWidth);
-    const height = 2;
-
-    this.context.beginPath();
-    this.context.fillStyle = color;
-    this.context.fillRect(
-      x,
-      y,
-      width,
-      height,
-    );
-  }
-
-
-  // CURRENT PRICE PLACEMENT
-  yAxisPoint(pointVal, upperVal, lowerVal) {
-    const cHeight = this.canvasHeight * 0.9;
-    const valRatio = (pointVal - lowerVal) / (upperVal - lowerVal);
-    return (cHeight * valRatio) + (this.canvasHeight * 0.05);
-  }
-
   // CURRENT PRICE DISPLAY
   CurrentPrice() {
     const color = 'red';
@@ -460,6 +379,7 @@ export default class StockChart {
     const midPoint = this.canvasHeight * 0.5;
 
     if (n * window.verticalZoom > (this.canvasHeight * 0.5) + (window.verticalPan * window.verticalZoom)) {
+      // console.log(window.verticalZoom);
       if (window.verticalZoom <= 0.5) {
         offsetScale = 0.5;
       }
@@ -525,4 +445,90 @@ export default class StockChart {
 
     this.lowerHorizontalLines(n + (offset / offsetScale));
   }
+
+  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  // CHART border
+  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  ChartBorder() {
+    const color = 'black';
+    this.context.beginPath();
+    this.context.fillStyle = color;
+    this.context.rect(
+      -(this.canvasWidth),
+      -(this.canvasHeight),
+      this.canvasWidth,
+      2,
+    );
+    this.context.fill();
+
+    this.context.beginPath();
+    this.context.fillStyle = color;
+    this.context.rect(
+      -2,
+      -(this.canvasHeight),
+      2,
+      this.canvasHeight,
+    );
+    this.context.fill();
+
+    this.context.beginPath();
+    this.context.fillStyle = color;
+    this.context.rect(
+      0,
+      -2,
+      -(this.canvasWidth),
+      2,
+    );
+    this.context.fill();
+
+    this.context.beginPath();
+    this.context.fillStyle = color;
+    this.context.rect(-(this.canvasWidth), 0, 2, -(this.canvasHeight));
+    this.context.fill();
+  }
+
+  // CURRENT PRICE PLACEMENT
+  yAxisPoint(pointVal, upperVal, lowerVal) {
+    const cHeight = this.canvasHeight * 0.9;
+    const valRatio = (pointVal - lowerVal) / (upperVal - lowerVal);
+    return (cHeight * valRatio) + (this.canvasHeight * 0.05);
+  }
+
+  // function VerticalMidPoint () {
+  //   var self = this;
+  //   self.color = '#aaaaaa';
+  //   self.x = -(canvasWidth * .5);
+  //   self.y = 0;
+  //   self.width = 2;
+  //   self.height = -(canvasHeight);
+  //   self.draw = function () {
+  //     context.beginPath();
+  //     context.fillStyle = 'black';
+  //     context.rect(
+  //       self.x,
+  //       self.y,
+  //       self.width,
+  //       self.height
+  //     );
+  //     context.fill();
+  //   }
+  // }
+  // var vMidPoint = new VerticalMidPoint();
+
+  // HorizontalMidPoint() {
+  //   const color = 'lightblue';
+  //   const x = 0;
+  //   const y = -(this.canvasHeight * 0.5);
+  //   const width = -(this.canvasWidth);
+  //   const height = 2;
+
+  //   this.context.beginPath();
+  //   this.context.fillStyle = color;
+  //   this.context.fillRect(
+  //     x,
+  //     y,
+  //     width,
+  //     height,
+  //   );
+  // }
 }

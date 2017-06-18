@@ -48,7 +48,7 @@ fetch('https://www.quandl.com/api/v3/datasets/BCHARTS/BITSTAMPUSD.json?limit=100
 }).then((response) => {
   return response.json();
 }).then((json) => {
-  console.log(json);
+  // console.log(json);
   // console.log(JSON.parse(data));
   const priceData = json.dataset.data.map((d) => {
     return {

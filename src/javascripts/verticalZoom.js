@@ -1,40 +1,41 @@
 window.verticalZoom = 1;
-var scaleDirection = 'down';
-var scaling = true;
+let scaleDirection = 'down';
+let scaling = true;
 
-export default function verticalZoom () {
-  'use strict';
+export default function verticalZoom() {
+  const yaxisContainer = document.querySelector('.yaxis-canvas');
+  let mouseDown = false;
+  let mousePos = null;
 
-  var yaxisContainer = document.querySelector('.yaxis-canvas');
-  var mouseDown = false;
-  var mousePos = null;
-
-  yaxisContainer.onmousemove = function (e) {
-    if (!mouseDown) {
+  yaxisContainer.onmousemove = (e) => {
+    if (!mouseDown) return;
+    if (window.verticalZoom <= 0.05) {
+      window.verticalZoom = 0.06;
       return;
     }
 
     if (mousePos) {
       if (mousePos.y > e.clientY) {
-        window.verticalZoom = window.verticalZoom + .04;
+        window.verticalZoom += 0.04;
         scaleDirection = 'up';
       }
       if (mousePos.y < e.clientY) {
-        window.verticalZoom = window.verticalZoom - .04;
+        window.verticalZoom -= 0.04;
         scaleDirection = 'down';
       }
     }
 
     mousePos = {};
     mousePos.y = e.clientY;
-  }
+  };
 
-  yaxisContainer.onmousedown = function () {
+  yaxisContainer.onmousedown = () => {
     mouseDown = true;
     scaling = true;
-  }
-  yaxisContainer.onmouseup = function () {
+  };
+
+  yaxisContainer.onmouseup = () => {
     mouseDown = false;
     scaling = false;
-  }
+  };
 }
