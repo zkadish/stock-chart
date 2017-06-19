@@ -43,26 +43,30 @@ function currentPrice(currencies) {
   }).then(response => response.json()).then(json => json.bpi);
 }
 
-fetch('https://www.quandl.com/api/v3/datasets/BCHARTS/BITSTAMPUSD.json?limit=100&end_date=&api_key=wHW3yQNffR6nKooC_ZhJ', {
-  method: 'GET',
-}).then((response) => {
-  return response.json();
-}).then((json) => {
-  // console.log(json);
-  // console.log(JSON.parse(data));
-  const priceData = json.dataset.data.map((d) => {
-    return {
-      Close: d[4],
-      Date: d[0],
-      High: d[2],
-      Low: d[3],
-      Open: d[1],
-      Volume: d[5],
-    };
-  });
-  const stockChart = new StockChart(priceData, currentPrice);
-  const chartYAxis = new ChartYAxis(priceData, currentPrice);
-  const chartXAxis = new ChartXAxis(priceData);
+function loadChart() {
+  fetch('https://www.quandl.com/api/v3/datasets/BCHARTS/BITSTAMPUSD.json?limit=100&end_date=&api_key=wHW3yQNffR6nKooC_ZhJ', {
+    method: 'GET',
+  }).then((response) => {
+    return response.json();
+  }).then((json) => {
+    // console.log(json);
+    // console.log(JSON.parse(data));
+    const priceData = json.dataset.data.map((d) => {
+      return {
+        Close: d[4],
+        Date: d[0],
+        High: d[2],
+        Low: d[3],
+        Open: d[1],
+        Volume: d[5],
+      };
+    });
+    const stockChart = new StockChart(priceData, currentPrice);
+    const chartYAxis = new ChartYAxis(priceData, currentPrice);
+    const chartXAxis = new ChartXAxis(priceData);
 
-  chartLoop(stockChart, chartYAxis, chartXAxis);
-});
+    chartLoop(stockChart, chartYAxis, chartXAxis);
+  });
+}
+
+export default loadChart;

@@ -6,8 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prebuild": "rm -rf dist",
-    "build": "webpack -d",
-    "start": "webpack-dev-server --hot"
+    "build": "export NODE_ENV=production; webpack -d",
+    "start": "export NODE_ENV=development; webpack-dev-server --hot"
   },
   "keywords": [],
   "author": "",

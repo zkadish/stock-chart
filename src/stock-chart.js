@@ -1,3 +1,5 @@
 import './stylesheets/style.scss';
 
-import './javascripts/app';
+import loadChart from './javascripts/app';
+
+export default loadChart;
