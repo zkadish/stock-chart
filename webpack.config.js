@@ -9,7 +9,7 @@ const GLOBALS = {
 
 const extractSass = new ExtractTextWebpackPlugin({
   filename: '[name].css',
-  // disable: process.env.NODE_ENV === 'development'
+  // disable: process.env.NODE_ENV === 'development',
 });
 
 const ENTRY_PATH = process.env.NODE_ENV === 'development' ? './src/webpack-dev-entry.js' : './src/stock-chart.js';
