@@ -7,30 +7,26 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <!-- Place favicon.ico in the root directory -->
-    <link href="stockchart.css" rel="stylesheet"></head>
+    <link href="stock-chart.css" rel="stylesheet"></head>
     <body>
         <!--[if lte IE 9]>
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
         <![endif]-->
-
-        <div class="canvas-container">
-            <table class="table-container">
-              <tr>
-                <td class="chart-container">
-                  <canvas class="chart-canvas"></canvas>
-                </td>
-                <td class="yaxis-container">
-                  <canvas class="yaxis-canvas"></canvas>
-                </td>
-              </tr>
-              <tr>
-                <td class="xaxis-container">
-                  <canvas class="xaxis-canvas"></canvas>
-                </td>
-                <td></td>
-              </tr>
-            </table>
+        <div class="stock-chart">
+          <div class="canvas-container">
+              <div class="resize-container">
+                  <div class="chart-container">
+                    <canvas class="chart-canvas"></canvas>
+                  </div>
+                  <div class="yaxis-container">
+                    <canvas class="yaxis-canvas"></canvas>
+                  </div>
+                  <div class="xaxis-container">
+                    <canvas class="xaxis-canvas"></canvas>
+                  </div>
+              </div>
+          </div>
         </div>
         
-    <script type="text/javascript" src="sotck-chart.js"></script></body>
+    <script type="text/javascript" src="stock-chart.js"></script></body>
 </html>

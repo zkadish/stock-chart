@@ -1,20 +1,21 @@
+import { UPDATE_CURRENT_PRICE } from './constants';
 
 export default class ChartYAxis {
-  constructor(priceData, currentPrice) {
+  constructor(currentPrice, currency) {
     // set current price initial value
-    this.currentPrice = { USD: { rate_float: 0 } };
-    currentPrice('USD').then((data) => {
+    this.currentPrice = null;
+    currentPrice(currency).then((data) => {
       this.currentPrice = data;
     });
 
     // update current value every 30 secons
     setInterval(() => {
-      currentPrice('USD').then((data) => {
+      currentPrice(currency).then((data) => {
+        console.log('UPDATE_CURRENT_PRICE:', data.USD.rate_float);
         this.currentPrice = data;
       });
-    }, 60000);
+    }, UPDATE_CURRENT_PRICE * 1000);
 
-    this.priceData = priceData;
     this.canvasContainer = document.querySelector('.yaxis-container');
     this.containerRect = this.canvasContainer.getBoundingClientRect();
     this.canvas = document.querySelector('.yaxis-canvas');
@@ -75,11 +76,12 @@ export default class ChartYAxis {
   }
 
   // CURRENT PRICE DISPLAY
-  CurrentPrice() {
+  CurrentPrice(currency) {
+    if (this.currentPrice === null) return;
     const bgColor = 'red';
     const fgColor = 'white';
     const x = 0;
-    const y = -(this.YaxisPoint(this.currentPrice.USD.rate_float, this.upperVal, this.lowerVal));
+    const y = -(this.YaxisPoint(this.currentPrice[currency].rate_float, this.upperVal, this.lowerVal));
     const width = -(this.canvasWidth);
     const height = 40;
     const midPoint = this.canvasHeight * 0.5;
@@ -108,7 +110,7 @@ export default class ChartYAxis {
     this.context.textBaseline = 'middle';
     this.context.fillStyle = fgColor;
     this.context.fillText(
-      (this.currentPrice.USD.rate_float).toFixed(2),
+      (this.currentPrice[currency].rate_float).toFixed(2),
       width + 20,
       ((y + window.verticalPan) * window.verticalZoom) + (midPoint * window.verticalZoom),
     );

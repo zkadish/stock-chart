@@ -12,7 +12,7 @@ const extractSass = new ExtractTextWebpackPlugin({
   // disable: process.env.NODE_ENV === 'development',
 });
 
-const ENTRY_PATH = process.env.NODE_ENV === 'development' ? './src/webpack-dev-entry.js' : './src/stock-chart.js';
+const ENTRY_PATH = process.env.NODE_ENV === 'development' ? './src/webpack-dev-entry.js' : './src/javascripts/app.js';
 
 console.log('GLOBALS:', GLOBALS.__DEV__);
 console.log('process.env.NODE_ENV:', process.env.NODE_ENV);
@@ -20,11 +20,13 @@ console.log('entryPath:', ENTRY_PATH);
 
 module.exports = {
   entry: {
-    stockchart: ENTRY_PATH,
+    'stock-chart': ENTRY_PATH,
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'sotck-chart.js',
+    filename: '[name].js',
+    library: 'stockChart',
+    libraryTarget: 'umd',
   },
   resolve: {
     extensions: ['*', '.js', '.jsx'],

@@ -1,31 +1,35 @@
 import moment from 'moment';
 
+import { UPDATE_CURRENT_PRICE } from './constants';
+
 // TODO: create a StockChart class and extend all other classes from it!
 // ie: the x and y axis charts should be extended from StockCart
 // figure out what the classes have in common pull that out into a base class
 // and extend the rest
 
 export default class StockChart {
-  constructor(priceData, currentPrice) {
+  constructor(historicPrice, currentPrice, currency) {
+    // debugger;
     // set current price initial value
-    this.currentPrice = { USD: { rate_float: 0 } };
-    currentPrice('USD').then((data) => {
-      // console.log('initial data', data);
+    this.currentPrice = null;
+    currentPrice(currency).then((data) => {
       this.currentPrice = data;
     });
 
     // update current value every 30 secons
     setInterval(() => {
-      // console.log('get current price', this);
-      currentPrice('USD').then((data) => {
+      currentPrice(currency).then((data) => {
         this.currentPrice = data;
       });
-      // console.log(this.currentPrice);
-    }, 60000);
+    }, UPDATE_CURRENT_PRICE * 1000);
 
-    this.priceData = priceData;
+    // set historical data
+    this.priceData = null;
+    historicPrice(currency).then((data) => {
+      this.priceData = data;
+    });
+
     this.canvasContainer = document.querySelector('.chart-container');
-
     this.containerRect = this.canvasContainer.getBoundingClientRect();
     this.canvas = document.querySelector('.chart-canvas');
     this.context = this.canvas.getContext('2d');
@@ -143,7 +147,8 @@ export default class StockChart {
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   // BAR DISPLAY
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  BarData(n, yPos, vRange, index) {
+  BarData(n, yPos, vRange, index, currency) {
+    if (this.priceData === null || this.currentPrice === null) return;
     let i = index;
     const color = 'black';
     // const x = 0;
@@ -179,12 +184,12 @@ export default class StockChart {
     const barOpenPos = yPos(this.priceData[i].Open, this.chartUpperVal, this.chartLowerVal);
     let barClosePos = yPos(this.priceData[i].Close, this.chartUpperVal, this.chartLowerVal);
     if (i === 0) {
-      barClosePos = yPos(this.currentPrice.USD.rate_float, this.chartUpperVal, this.chartLowerVal);
+      barClosePos = yPos(this.currentPrice[currency].rate_float, this.chartUpperVal, this.chartLowerVal);
       if (barHighPos < barClosePos) {
-        barHighPos = yPos(this.currentPrice.USD.rate_float, this.chartUpperVal, this.chartLowerVal);        
+        barHighPos = yPos(this.currentPrice[currency].rate_float, this.chartUpperVal, this.chartLowerVal);        
       }
       if (barLowPos > barClosePos) {
-        barLowPos = yPos(this.currentPrice.USD.rate_float, this.chartUpperVal, this.chartLowerVal);        
+        barLowPos = yPos(this.currentPrice[currency].rate_float, this.chartUpperVal, this.chartLowerVal);        
       }
     }
 
@@ -247,6 +252,7 @@ export default class StockChart {
   }
 
   MonthYear(n, date, index) {
+    if (this.priceData === null) return;
     let i = index;
     const color = '#000';
     const buffer = 30;
@@ -281,6 +287,7 @@ export default class StockChart {
   // VERTICAL GRID LINES
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   VerticalLines(n, date, index) {
+    if (this.priceData === null) return;
     let i = index;
     const color = '#ccc';
     const y = 0;
@@ -343,11 +350,12 @@ export default class StockChart {
   }
 
   // CURRENT PRICE DISPLAY
-  CurrentPrice() {
+  CurrentPrice(currency) {
+    if (this.currentPrice === null) return;
     const color = 'red';
     const x = 0;
     // const y = -(this.yAxisPoint(this.priceData[0].Close, this.chartUpperVal, this.chartLowerVal));
-    const y = -(this.yAxisPoint(this.currentPrice.USD.rate_float, this.chartUpperVal, this.chartLowerVal));
+    const y = -(this.yAxisPoint(this.currentPrice[currency].rate_float, this.chartUpperVal, this.chartLowerVal));
     const width = -(this.canvasWidth);
     const height = 2;
 

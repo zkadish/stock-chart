@@ -3,6 +3,6 @@ import './stylesheets/style.scss';
 
 import loadChart from './javascripts/app';
 
-loadChart();
+loadChart('USD');
 
 export default loadChart;

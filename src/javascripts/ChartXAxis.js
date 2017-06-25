@@ -1,8 +1,12 @@
 import moment from 'moment';
 
 export default class ChartXAxis {
-  constructor(priceData) {
-    this.priceData = priceData;
+  constructor(historicPrice, currency) {
+    this.priceData = null;
+    historicPrice(currency).then((data) => {
+      this.priceData = data;
+    });
+
     this.canvasContainer = document.querySelector('.xaxis-container');
     this.containerRect = this.canvasContainer.getBoundingClientRect();
     this.canvas = document.querySelector('.xaxis-canvas');
@@ -51,6 +55,7 @@ export default class ChartXAxis {
   }
 
   verticalLines(n, date, index) {
+    if (this.priceData === null) return;
     let i = index;
     const color = '#ccc';
     const width = 2;

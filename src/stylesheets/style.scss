@@ -1,49 +1,62 @@
 
 .canvas-container {
   position: absolute;
-  top: 35px;
-  left: 40px;
-  bottom: 40px;
-  right: 40px;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   user-select: none;
-  //border: 1px solid red;
+  // border: 1px dashed blue;
 
-  .table-container {
+  .resize-container {
     position: absolute;
     top: 0;
     right: 0;
+    bottom: 0;
+    left: 0;
     user-select: none;
-    //border: 1px solid green;
-    border-spacing: 0;
+    // border: 1px solid green;
 
-    td {
-      position: relative;
-      //border: 1px dashed red;
+    .chart-container {
+      position: absolute;
+      top: 0;
+      right: 85px;
+      bottom: 30px;
+      left: 0;
+      // border: 1px solid blue;      
     }
 
     .chart-canvas {
       position: absolute;
       top: 0;
-      right: 0;
+      left: 0;
       user-select: none;
-      //border: 1px solid blue;
+      // border: 1px solid blue;
     }
 
     .yaxis-container {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 30px;
       width: 85px;
+      // border: 1px solid blue;
     }
 
     .yaxis-canvas {
       position: absolute;
       top: 0;
-      right: 0;
+      left: 0;
       user-select: none;
-      //border: 1px solid blue;
-      //width: 85px;
     }
 
     .xaxis-container {
-      height: 40px;
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      right: 85px;
+      height: 30px;
+      // border: 1px solid blue;
     }
 
     .xaxis-canvas {
@@ -51,10 +64,6 @@
       top: 0;
       right: 0;
       user-select: none;
-      //border: 1px solid blue;
-      //width: 85px;
     }
-
   }
 }
-
