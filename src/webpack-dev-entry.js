@@ -1,8 +1,14 @@
-import './stylesheets/page.scss';
-import './stylesheets/style.scss';
+import 'stylesheets/page.scss';
+import 'stylesheets/style.scss';
 
-import loadChart from './javascripts/app';
+import loadChart from 'javascripts/app';
+import 'javascripts/support/app-support';
 
-loadChart('USD');
+const options = {
+  curPriProvider: 'coincap',
+  currencyPair: 'USD',
+};
+
+loadChart(options);
 
 export default loadChart;

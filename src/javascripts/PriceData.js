@@ -1,12 +1,13 @@
-import { PROVIDER_CURRENT_PRICE } from './constants';
+// import { PROVIDER_CURRENT_PRICE } from './constants';
 
 // coindesk: http://www.coindesk.com/api/
-export function current(currency) {
+export function current(options) {
+  // debugger;
   const protocol = window.location.protocol;
 
-  switch (PROVIDER_CURRENT_PRICE) {
+  switch (options.curPriProvider) {
     case 'coindesk':
-      return fetch(`${protocol}//api.coindesk.com/v1/bpi/currentprice/${currency}.json`, {
+      return fetch(`${protocol}//api.coindesk.com/v1/bpi/currentprice/${options.currencyPair}.json`, {
         method: 'GET',
       }).then(response => response.json()).then(json => json.bpi);
       // json.bpi = {
@@ -18,19 +19,19 @@ export function current(currency) {
       //   }
       // }
     case 'coincap':
+      // coincap can't change currency pair
       return fetch('http://www.coincap.io/page/BTC', {
         method: 'GET',
-      }).then((response) => {
-        return response.json();
-      }).then((data) => {
-        return {
-          USD: {
-            rate_float: Number(data.btcPrice),
-          },
-        };
-      });
+      }).then(response => response.json())
+        .then((data) => {
+          return {
+            USD: {
+              rate_float: Number(data.btcPrice),
+            },
+          };
+        });
     default:
-      console.log('no current price provider');
+      console.log('Error: priceData.js "no current price provider"');
       break;
   }
 

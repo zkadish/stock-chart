@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-import { UPDATE_CURRENT_PRICE } from './constants';
+import { UPDATE_CURRENT_PRICE, HORIZONTAL_GRID_LINES } from './constants';
 
 // TODO: create a StockChart class and extend all other classes from it!
 // ie: the x and y axis charts should be extended from StockCart
@@ -8,24 +8,19 @@ import { UPDATE_CURRENT_PRICE } from './constants';
 // and extend the rest
 
 export default class StockChart {
-  constructor(historicPrice, currentPrice, currency) {
-    // debugger;
+  constructor(historicPrice, currentPrice, options) {
     // set current price initial value
     this.currentPrice = null;
-    currentPrice(currency).then((data) => {
-      this.currentPrice = data;
-    });
+    this.curentPriceData(currentPrice, options);
 
-    // update current value every 30 secons
+    // update current Price every 10 seconds
     setInterval(() => {
-      currentPrice(currency).then((data) => {
-        this.currentPrice = data;
-      });
+      this.curentPriceData(currentPrice, options);
     }, UPDATE_CURRENT_PRICE * 1000);
 
     // set historical data
     this.priceData = null;
-    historicPrice(currency).then((data) => {
+    historicPrice(options.currencyPair).then((data) => {
       this.priceData = data;
     });
 
@@ -34,7 +29,7 @@ export default class StockChart {
     this.canvas = document.querySelector('.chart-canvas');
     this.context = this.canvas.getContext('2d');
 
-    this.hGridLines = 10; // 18
+    this.hGridLines = HORIZONTAL_GRID_LINES; // 18
     this.chartUpperVal = null;
     this.chartLowerVal = null;
 
@@ -55,6 +50,15 @@ export default class StockChart {
     document.addEventListener('window:onresize', this.windowOnResizeHandler, false);
   }
 
+  // yaxis
+  curentPriceData(currentPrice, options) {
+    console.log('options', options, 'priceObj:', this.currentPrice);
+    currentPrice(options).then((data) => {
+      this.currentPrice = data;
+    });
+  }
+
+  // yaxis, xaxis
   windowOnResizeHandler() {
     this.containerRect = this.canvasContainer.getBoundingClientRect();
     this.canvasWidth = this.containerRect.width * 2;

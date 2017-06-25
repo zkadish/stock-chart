@@ -9,7 +9,7 @@ import * as Price from 'javascripts/PriceData';
 
 import 'stylesheets/style.scss';
 
-function loadChart(currencyPair) {
+function loadChart(options) {
   // set up on window resize event
   const windowOnResize = new CustomEvent('window:onresize');
 
@@ -37,10 +37,10 @@ function loadChart(currencyPair) {
   VerticalZoom();
   HorzVertPanning();
 
-  const stockChart = new StockChart(Price.historic, Price.current, currencyPair);
-  const chartYAxis = new ChartYAxis(Price.current, currencyPair);
-  const chartXAxis = new ChartXAxis(Price.historic, currencyPair);
-  chartLoop(stockChart, chartYAxis, chartXAxis, currencyPair);
+  const stockChart = new StockChart(Price.historic, Price.current, options);
+  const chartYAxis = new ChartYAxis(Price.current, options);
+  const chartXAxis = new ChartXAxis(Price.historic, options);
+  chartLoop(stockChart, chartYAxis, chartXAxis, options.currencyPair);
 }
 
 export default loadChart;

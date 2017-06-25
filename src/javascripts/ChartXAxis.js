@@ -1,9 +1,9 @@
 import moment from 'moment';
 
 export default class ChartXAxis {
-  constructor(historicPrice, currency) {
+  constructor(historicPrice, options) {
     this.priceData = null;
-    historicPrice(currency).then((data) => {
+    historicPrice(options.currencyPair).then((data) => {
       this.priceData = data;
     });
 
@@ -27,6 +27,7 @@ export default class ChartXAxis {
     document.addEventListener('window:onresize', this.windowOnResizeHandler, false);
   }
 
+  // should xaxis resize?
   windowOnResizeHandler() {
     this.containerRect = this.canvasContainer.getBoundingClientRect();
     this.canvasWidth = this.containerRect.width * 2;

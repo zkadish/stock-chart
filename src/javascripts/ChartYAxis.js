@@ -1,19 +1,14 @@
 import { UPDATE_CURRENT_PRICE } from './constants';
 
 export default class ChartYAxis {
-  constructor(currentPrice, currency) {
+  constructor(currentPrice, options) {
     // set current price initial value
     this.currentPrice = null;
-    currentPrice(currency).then((data) => {
-      this.currentPrice = data;
-    });
+    this.currentPriceData(currentPrice, options);
 
-    // update current value every 30 secons
     setInterval(() => {
-      currentPrice(currency).then((data) => {
-        console.log('UPDATE_CURRENT_PRICE:', data.USD.rate_float);
-        this.currentPrice = data;
-      });
+      this.currentPriceData(currentPrice, options);
+      // update current value every 30 seconds
     }, UPDATE_CURRENT_PRICE * 1000);
 
     this.canvasContainer = document.querySelector('.yaxis-container');
@@ -49,12 +44,20 @@ export default class ChartYAxis {
     document.addEventListener('window:onresize', this.windowOnResizeHandler, false);
   }
 
+  // stockchart
+  currentPriceData(currentPrice, options) {
+    currentPrice(options).then((data) => {
+      this.currentPrice = data;
+    });
+  }
+
   pricevalueRangeHandler(e) {
     this.upperVal = e.detail.chartUpperVal;
     this.lowerVal = e.detail.chartLowerVal;
     this.yVals = this.yAxisValues(e.detail.chartUpperVal, e.detail.chartLowerVal);
   }
 
+  // should yaxis resize
   windowOnResizeHandler() {
     this.containerRect = this.canvasContainer.getBoundingClientRect();
     this.canvasWidth = this.containerRect.width * 2;
