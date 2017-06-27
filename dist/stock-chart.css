@@ -732,7 +732,7 @@ h3 {
     bottom: 0;
     left: 0;
     user-select: none; }
-    .canvas-container .resize-container .chart-container {
+    .canvas-container .resize-container .stockchart-container {
       position: absolute;
       top: 0;
       right: 85px;

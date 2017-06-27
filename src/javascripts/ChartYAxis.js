@@ -1,78 +1,11 @@
-import { UPDATE_CURRENT_PRICE } from './constants';
+import { UPDATE_CURRENT_PRICE, HORIZONTAL_GRID_LINES } from './constants';
+import StockChart from './StockChart';
 
-export default class ChartYAxis {
-  constructor(currentPrice, options) {
-    // set current price initial value
-    this.currentPrice = null;
-    this.currentPriceData(currentPrice, options);
-
-    setInterval(() => {
-      this.currentPriceData(currentPrice, options);
-      // update current value every 30 seconds
-    }, UPDATE_CURRENT_PRICE * 1000);
-
-    this.canvasContainer = document.querySelector('.yaxis-container');
-    this.containerRect = this.canvasContainer.getBoundingClientRect();
-    this.canvas = document.querySelector('.yaxis-canvas');
-    this.context = this.canvas.getContext('2d');
-
-    this.lastUpdate = null;
-
-    // *2 to scale up canvas for retna display
-    this.canvasWidth = this.containerRect.width * 2;
-    this.canvasHeight = this.containerRect.height * 2;
-
-    this.hGridLines = 10;
-    this.upperVal = 0;
-    this.lowerVal = 0;
-    this.yVals = {
-      highStart: 0,
-      lowStart: 0,
-      offset: 0,
-    };
-
-    this.canvas.setAttribute('width', this.canvasWidth);
-    this.canvas.setAttribute('height', this.canvasHeight);
-
-    this.canvas.style.width = `${this.canvasWidth * 0.5}px`;
-    this.canvas.style.height = `${this.canvasHeight * 0.5}px`;
-
-    this.pricevalueRangeHandler = this.pricevalueRangeHandler.bind(this);
-    document.addEventListener('pricevalue:range', this.pricevalueRangeHandler);
-
-    this.windowOnResizeHandler = this.windowOnResizeHandler.bind(this);
-    document.addEventListener('window:onresize', this.windowOnResizeHandler, false);
-  }
-
-  // stockchart
-  currentPriceData(currentPrice, options) {
-    currentPrice(options).then((data) => {
-      this.currentPrice = data;
-    });
-  }
-
-  pricevalueRangeHandler(e) {
-    this.upperVal = e.detail.chartUpperVal;
-    this.lowerVal = e.detail.chartLowerVal;
-    this.yVals = this.yAxisValues(e.detail.chartUpperVal, e.detail.chartLowerVal);
-  }
-
-  // should yaxis resize
-  windowOnResizeHandler() {
-    this.containerRect = this.canvasContainer.getBoundingClientRect();
-    this.canvasWidth = this.containerRect.width * 2;
-    this.canvasHeight = this.containerRect.height * 2;
-
-    this.canvas.setAttribute('width', this.canvasWidth);
-    this.canvas.setAttribute('height', this.canvasHeight);
-
-    this.canvas.style.width = `${this.canvasWidth * 0.5}px`;
-    this.canvas.style.height = `${this.canvasHeight * 0.5}px`;
-  }
-
+export default class ChartYAxis extends StockChart {
   // CURRENT PRICE PLACEMENT
   // currentClose, upperRangeVal, lowerRangeVal
   YaxisPoint(pointVal, upperVal, lowerVal) {
+    if (!window.chartUpperVal || !window.chartLowerVal) return;
     const cHeight = this.canvasHeight * 0.9; // 0.9
     const valRatio = (pointVal - lowerVal) / (upperVal - lowerVal);
     return (cHeight * valRatio) + (this.canvasHeight * 0.05);
@@ -84,7 +17,7 @@ export default class ChartYAxis {
     const bgColor = 'red';
     const fgColor = 'white';
     const x = 0;
-    const y = -(this.YaxisPoint(this.currentPrice[currency].rate_float, this.upperVal, this.lowerVal));
+    const y = -(this.YaxisPoint(this.currentPrice[currency].rate_float, window.chartUpperVal, window.chartLowerVal));
     const width = -(this.canvasWidth);
     const height = 40;
     const midPoint = this.canvasHeight * 0.5;
@@ -122,11 +55,9 @@ export default class ChartYAxis {
 
   // DISPLAY VALUES >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   // these values relate to 18 and 10 grid lines respectivly
-  // TODO: use constant hGridLInes
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   yAxisValues(high, low) {
     const range = high - low;
-    // this.offset = this.range // 17; // 9
     const offset = range / 9; // 9, // 17
     let highStart = 0;
     let lowStart = 0;
@@ -145,7 +76,8 @@ export default class ChartYAxis {
     };
   }
 
-  upperHorizontalLines(n = ((this.canvasHeight / this.hGridLines) / 2) / 1, hVal = this.yVals.highStart) {
+  upperHorizontalLines(n = ((this.canvasHeight / this.hGridLines) / 2) / 1, hVal = this.yAxisValues(window.chartUpperVal, window.chartLowerVal).highStart, i = 0) {
+    if (!window.chartUpperVal || !window.chartLowerVal) return;
     const color = '#cccccc';
     const x = -(this.canvasWidth);
     const width = 15;
@@ -153,20 +85,21 @@ export default class ChartYAxis {
     const offset = this.canvasHeight / this.hGridLines;
     let offsetScale = 1;
     const midPoint = this.canvasHeight * 0.5;
+    const yVals = this.yAxisValues(window.chartUpperVal, window.chartLowerVal);
     let highVal = hVal;
     let yValsScale = 1;
 
     if (n * window.verticalZoom > (this.canvasHeight * 0.5) + (window.verticalPan * window.verticalZoom)) {
-      highVal = +(this.yVals.highStart);
+      highVal = +(yVals.highStart);
       if (window.verticalZoom <= 0.5) {
         offsetScale = 0.5;
         yValsScale = 2;
-        highVal += (this.yVals.offset * 0.5);
+        highVal += (yVals.offset * 0.5);
       }
       if (window.verticalZoom > 0.5) {
         offsetScale = 1;
         yValsScale = 1;
-        highVal = this.yVals.highStart;
+        highVal = yVals.highStart;
       }
       return;
     }
@@ -197,11 +130,12 @@ export default class ChartYAxis {
     );
     this.context.restore();
 
-    highVal = (+(highVal) + +(this.yVals.offset * yValsScale));
+    highVal += +(yVals.offset * yValsScale);
     this.upperHorizontalLines(n + (offset / offsetScale), highVal);
   }
 
-  lowerHorizontalLines(n = ((this.canvasHeight / this.hGridLines) / 2) / 1, lVal = this.yVals.lowStart) {
+  lowerHorizontalLines(n = ((this.canvasHeight / this.hGridLines) / 2) / 1, lVal = this.yAxisValues(window.chartUpperVal, window.chartLowerVal).lowStart) {
+    if (!window.chartUpperVal || !window.chartLowerVal) return;
     const color = '#cccccc';
     const x = -(this.canvasWidth);
     const width = 15;
@@ -209,17 +143,18 @@ export default class ChartYAxis {
     const offset = (this.canvasHeight * 0.5) / 5;
     const offsetScale = 1;
     const midPoint = this.canvasHeight * 0.5;
+    const yVals = this.yAxisValues(window.chartUpperVal, window.chartLowerVal);
     let lowerVal = lVal;
     const yValsScale = 1;
 
     if (n * window.verticalZoom > (this.canvasHeight * 0.5) - (window.verticalPan * window.verticalZoom)) {
-      lowerVal = +(this.yVals.lowStart);
+      lowerVal = +(yVals.lowStart);
 
       if (window.verticalZoom <= 0.5) {
-        lowerVal -= (this.yVals.offset * 0.5);
+        lowerVal -= (yVals.offset * 0.5);
       }
       if (window.verticalZoom > 0.5) {
-        self.lowerVal = this.yVals.lowStart;
+        self.lowerVal = yVals.lowStart;
       }
       return;
     }
@@ -250,7 +185,7 @@ export default class ChartYAxis {
       ((n * window.verticalZoom) - (midPoint + (-window.verticalPan * window.verticalZoom))),
     );
 
-    lowerVal -= (this.yVals.offset * yValsScale);
+    lowerVal -= (yVals.offset * yValsScale);
     this.lowerHorizontalLines(n + (offset / offsetScale), lowerVal);
   }
 

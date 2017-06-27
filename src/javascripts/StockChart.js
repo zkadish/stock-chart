@@ -2,36 +2,16 @@ import moment from 'moment';
 
 import { UPDATE_CURRENT_PRICE, HORIZONTAL_GRID_LINES } from './constants';
 
-// TODO: create a StockChart class and extend all other classes from it!
-// ie: the x and y axis charts should be extended from StockCart
-// figure out what the classes have in common pull that out into a base class
-// and extend the rest
+// TODO: Fix pan and zoom events so they release on document.mouseup and
+// make sure your clearing all events
 
 export default class StockChart {
-  constructor(historicPrice, currentPrice, options) {
-    // set current price initial value
-    this.currentPrice = null;
-    this.curentPriceData(currentPrice, options);
-
-    // update current Price every 10 seconds
-    setInterval(() => {
-      this.curentPriceData(currentPrice, options);
-    }, UPDATE_CURRENT_PRICE * 1000);
-
-    // set historical data
-    this.priceData = null;
-    historicPrice(options.currencyPair).then((data) => {
-      this.priceData = data;
-    });
-
-    this.canvasContainer = document.querySelector('.chart-container');
+  constructor(DOM, historicPrice, currentPrice, options) {
+    // set up canvas
+    this.canvasContainer = DOM;
     this.containerRect = this.canvasContainer.getBoundingClientRect();
-    this.canvas = document.querySelector('.chart-canvas');
+    this.canvas = DOM.children[0];
     this.context = this.canvas.getContext('2d');
-
-    this.hGridLines = HORIZONTAL_GRID_LINES; // 18
-    this.chartUpperVal = null;
-    this.chartLowerVal = null;
 
     // *2 to scale up canvas for retna display
     this.canvasWidth = this.containerRect.width * 2;
@@ -43,6 +23,19 @@ export default class StockChart {
     this.canvas.style.width = `${this.canvasWidth * 0.5}px`;
     this.canvas.style.height = `${this.canvasHeight * 0.5}px`;
 
+    // set current price initial value
+    this.currentPrice = null;
+    this.currentPriceData(currentPrice, options);
+
+    // set historical price data
+    this.priceData = null;
+    this.historicPriceData(historicPrice, options);
+
+    // yaxis
+    this.hGridLines = HORIZONTAL_GRID_LINES; // 18
+    this.chartUpperVal = null;
+    this.chartLowerVal = null;
+
     this.yPointPos = this.yPointPos.bind(this);
     this.valueRange = this.valueRange.bind(this);
 
@@ -51,10 +44,25 @@ export default class StockChart {
   }
 
   // yaxis
-  curentPriceData(currentPrice, options) {
-    console.log('options', options, 'priceObj:', this.currentPrice);
-    currentPrice(options).then((data) => {
-      this.currentPrice = data;
+  currentPriceData(currentPrice, options) {
+    const loop = (delay) => {
+      const interval = setInterval(() => {
+        console.log('porvider:', options, 'price:', this.currentPrice);
+        currentPrice(options).then((data) => {
+          this.currentPrice = data;
+        });
+        clearInterval(interval);
+        loop(UPDATE_CURRENT_PRICE * 1000);
+      }, delay);
+    };
+    loop(0);
+  }
+
+  // xaxis
+  historicPriceData(historicPrice, options) {
+    // debugger;
+    historicPrice(options.currencyPair).then((data) => {
+      this.priceData = data;
     });
   }
 
@@ -72,11 +80,7 @@ export default class StockChart {
   }
 
   roundOffVals(upperVal, lowerVal) {
-    // var startRange = Math.ceil(upperVal) - Math.floor(lowerVal);
-
     let range = Math.ceil(upperVal) - Math.floor(lowerVal);
-    // var rangeDif = null;
-
     let lessThen = false;
 
     if (range < 17) { // 9
@@ -94,8 +98,6 @@ export default class StockChart {
     if (lessThen) {
       range /= 10;
     }
-
-    // rangeDif = (range - (Math.ceil(upperVal) - Math.floor(lowerVal))) / 2;
 
     this.chartUpperVal = this.chartUpperVal + (range - (Math.ceil(upperVal) - Math.floor(lowerVal))) / 2;
     this.chartLowerVal = this.chartLowerVal - (range - (Math.ceil(upperVal) - Math.floor(lowerVal))) / 2;
@@ -126,6 +128,7 @@ export default class StockChart {
   // Get the high and low values of the data set
   // ********************************************
   setRange(priceData, chartVal, upper) {
+    // debugger;
     let prop = null;
     prop = upper ? 'chartUpperVal' : 'chartLowerVal';
     if (!chartVal) {
@@ -134,16 +137,19 @@ export default class StockChart {
     }
     if (upper && priceData.High > this[prop]) {
       this[prop] = Math.ceil(priceData.High);
+      window[prop] = priceData.High;
       // console.log('upper', this.chartUpperVal);
       return;
     }
     if (!upper && priceData.Low < this[prop]) {
       this[prop] = Math.ceil(priceData.Low);
-      // console.log('lower', this.chartLowerVal);  
+      window[prop] = priceData.Low;
+      // console.log('lower', this.chartLowerVal);
     }
   }
 
   valueRange(priceData, chartUpperVal, chartLowerVal) {
+    // debugger;
     this.setRange(priceData, chartUpperVal, true);
     this.setRange(priceData, chartLowerVal, false);
   }
@@ -155,10 +161,7 @@ export default class StockChart {
     if (this.priceData === null || this.currentPrice === null) return;
     let i = index;
     const color = 'black';
-    // const x = 0;
-    // const y = 0;
     const width = 6;
-    // const height = 40;
     const buffer = 30;
     const offset = 40;
 
@@ -168,7 +171,6 @@ export default class StockChart {
     }
     if (((n + buffer) * window.horizontalZoom) > this.canvasWidth + (window.horizontalPan * window.horizontalZoom)) {
       i = 0;
-      // console.log(chartUpperVal, chartLowerVal);
       const priceValueRange = new CustomEvent('pricevalue:range', {
         detail: {
           chartUpperVal: this.chartUpperVal,
@@ -181,7 +183,8 @@ export default class StockChart {
       return;
     }
 
-    vRange(this.priceData[i], this.chartUpperVal, this.chartLowerVal);
+    // vRange(this.priceData[i], this.chartUpperVal, this.chartLowerVal);
+    this.valueRange(this.priceData[i], this.chartUpperVal, this.chartLowerVal);
 
     let barHighPos = yPos(this.priceData[i].High, this.chartUpperVal, this.chartLowerVal);
     let barLowPos = yPos(this.priceData[i].Low, this.chartUpperVal, this.chartLowerVal);
@@ -200,7 +203,7 @@ export default class StockChart {
     this.context.save();
     this.context.beginPath();
 
-    // why so many transforms?
+    // TODO: use less transforms
     this.context.translate(0, -(this.canvasHeight * 0.5));
     this.context.scale(window.horizontalZoom, window.verticalZoom);
     this.context.translate(0, this.canvasHeight * 0.5);

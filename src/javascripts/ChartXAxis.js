@@ -1,45 +1,7 @@
 import moment from 'moment';
+import StockChart from './StockChart';
 
-export default class ChartXAxis {
-  constructor(historicPrice, options) {
-    this.priceData = null;
-    historicPrice(options.currencyPair).then((data) => {
-      this.priceData = data;
-    });
-
-    this.canvasContainer = document.querySelector('.xaxis-container');
-    this.containerRect = this.canvasContainer.getBoundingClientRect();
-    this.canvas = document.querySelector('.xaxis-canvas');
-    this.context = this.canvas.getContext('2d');
-    this.lastUpdate = null;
-
-    // *2 to scale up canvas for retna display
-    this.canvasWidth = this.containerRect.width * 2;
-    this.canvasHeight = this.containerRect.height * 2;
-
-    this.canvas.setAttribute('width', this.canvasWidth);
-    this.canvas.setAttribute('height', this.canvasHeight);
-
-    this.canvas.style.width = `${this.canvasWidth * 0.5}px`;
-    this.canvas.style.height = `${this.canvasHeight * 0.5}px`;
-
-    this.windowOnResizeHandler = this.windowOnResizeHandler.bind(this);
-    document.addEventListener('window:onresize', this.windowOnResizeHandler, false);
-  }
-
-  // should xaxis resize?
-  windowOnResizeHandler() {
-    this.containerRect = this.canvasContainer.getBoundingClientRect();
-    this.canvasWidth = this.containerRect.width * 2;
-    this.canvasHeight = this.containerRect.height * 2;
-
-    this.canvas.setAttribute('width', this.canvasWidth);
-    this.canvas.setAttribute('height', this.canvasHeight);
-
-    this.canvas.style.width = `${this.canvasWidth * 0.5}px`;
-    this.canvas.style.height = `${this.canvasHeight * 0.5}px`;
-  }
-
+export default class ChartXAxis extends StockChart {
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   // process date info from bar data
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
