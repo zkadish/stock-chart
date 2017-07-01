@@ -1,13 +1,9 @@
 import 'stylesheets/page.scss';
 import 'stylesheets/style.scss';
 
+import options from 'javascripts/chartOptions';
 import loadChart from 'javascripts/app';
 import 'javascripts/support/app-support';
-
-const options = {
-  curPriProvider: 'coincap',
-  currencyPair: 'USD',
-};
 
 loadChart(options);
 

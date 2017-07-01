@@ -60,8 +60,8 @@ export default class StockChart {
 
   // xaxis
   historicPriceData(historicPrice, options) {
-    // debugger;
-    historicPrice(options.currencyPair).then((data) => {
+    historicPrice(options).then((data) => {
+      // debugger;
       this.priceData = data;
     });
   }
@@ -157,7 +157,8 @@ export default class StockChart {
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   // BAR DISPLAY
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  BarData(n, yPos, vRange, index, currency) {
+  BarData(n, yPos, vRange, index) {
+    // debugger;
     if (this.priceData === null || this.currentPrice === null) return;
     let i = index;
     const color = 'black';
@@ -191,12 +192,12 @@ export default class StockChart {
     const barOpenPos = yPos(this.priceData[i].Open, this.chartUpperVal, this.chartLowerVal);
     let barClosePos = yPos(this.priceData[i].Close, this.chartUpperVal, this.chartLowerVal);
     if (i === 0) {
-      barClosePos = yPos(this.currentPrice[currency].rate_float, this.chartUpperVal, this.chartLowerVal);
+      barClosePos = yPos(this.currentPrice, this.chartUpperVal, this.chartLowerVal);
       if (barHighPos < barClosePos) {
-        barHighPos = yPos(this.currentPrice[currency].rate_float, this.chartUpperVal, this.chartLowerVal);        
+        barHighPos = yPos(this.currentPrice, this.chartUpperVal, this.chartLowerVal);        
       }
       if (barLowPos > barClosePos) {
-        barLowPos = yPos(this.currentPrice[currency].rate_float, this.chartUpperVal, this.chartLowerVal);        
+        barLowPos = yPos(this.currentPrice, this.chartUpperVal, this.chartLowerVal);        
       }
     }
 
@@ -243,21 +244,6 @@ export default class StockChart {
     this.BarData(n + offset, yPos, vRange, i);
   }
 
-  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  // process date info from bar data
-  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  processDate(date) {
-    const dateArray = moment(date).format('YYYY-MMM-DD-ddd-ww').split('-');
-    const dateObj = {
-      year: dateArray[0],
-      month: dateArray[1],
-      day: dateArray[2].replace(/^0/, ''),
-      weekDay: dateArray[3],
-      week: dateArray[4],
-    };
-    return dateObj;
-  }
-
   MonthYear(n, date, index) {
     if (this.priceData === null) return;
     let i = index;
@@ -274,13 +260,13 @@ export default class StockChart {
       return;
     }
 
-    if (date(this.priceData[i].Date).month !== date(this.priceData[i + 1].Date).month) {
+    if (this.priceData[i].Date.month !== this.priceData[i + 1].Date.month) {
       this.context.font = 'normal 20px Arial';
       this.context.textAlign = 'center';
       this.context.textBaseline = 'middle';
       this.context.fillStyle = color;
       this.context.fillText(
-        date(this.priceData[i].Date).month,
+        this.priceData[i].Date.month,
         -(((n + buffer) * window.horizontalZoom) - (window.horizontalPan * window.horizontalZoom)),
         -20,
       );
@@ -312,7 +298,7 @@ export default class StockChart {
       return;
     }
 
-    if (date(this.priceData[i].Date).week != date(this.priceData[i + 1].Date).week || i === 0) {
+    if (this.priceData[i].Date.week != this.priceData[i + 1].Date.week || i === 0) {
       this.context.save();
       this.context.beginPath();
 
@@ -332,7 +318,7 @@ export default class StockChart {
       this.context.restore();
     }
 
-    if (date(this.priceData[i].Date).month !== date(this.priceData[i + 1].Date).month) {
+    if (this.priceData[i].Date.month !== this.priceData[i + 1].Date.month) {
       this.context.save();
       this.context.beginPath();
 
@@ -356,13 +342,17 @@ export default class StockChart {
     this.VerticalLines((n + offset), date, i);
   }
 
-  // CURRENT PRICE DISPLAY
-  CurrentPrice(currency) {
+  // ***********************************************
+  // CURRENT PRICE LINE
+  // ***********************************************  
+  CurrentPrice() {
     if (this.currentPrice === null) return;
     const color = 'red';
     const x = 0;
+    // *****************************************
     // const y = -(this.yAxisPoint(this.priceData[0].Close, this.chartUpperVal, this.chartLowerVal));
-    const y = -(this.yAxisPoint(this.currentPrice[currency].rate_float, this.chartUpperVal, this.chartLowerVal));
+    const y = -(this.yAxisPoint(this.currentPrice, this.chartUpperVal, this.chartLowerVal));
+    // *****************************************
     const width = -(this.canvasWidth);
     const height = 2;
 

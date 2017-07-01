@@ -1,22 +1,10 @@
-import moment from 'moment';
 import StockChart from './StockChart';
 
 export default class ChartXAxis extends StockChart {
-  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  // process date info from bar data
-  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  processDate(date) {
-    const dateArray = moment(date).format('YYYY-MMM-DD-ddd-ww').split('-');
-    const dateObj = {
-      year: dateArray[0],
-      month: dateArray[1],
-      day: dateArray[2].replace(/^0/, ''),
-      weekDay: dateArray[3],
-      week: dateArray[4],
-    };
-    return dateObj;
-  }
-
+  // *****************************************************
+  // render vertical lines and first day of week
+  // TODO make vLines and day into seperate methods
+  // *****************************************************
   verticalLines(n, date, index) {
     if (this.priceData === null) return;
     let i = index;
@@ -49,12 +37,12 @@ export default class ChartXAxis extends StockChart {
 
     this.context.restore();
 
-    if (date(this.priceData[i].Date).week !== date(this.priceData[i + 1].Date).week) {
+    if (this.priceData[i].Date.week !== this.priceData[i + 1].Date.week) {
       this.context.font = 'normal 20px Arial';
       this.context.textAlign = 'center';
       this.context.textBaseline = 'middle';
       this.context.fillText(
-        date(this.priceData[i].Date).day,
+        this.priceData[i].Date.day,
         -(((n + buffer) * window.horizontalZoom) - (window.horizontalPan * window.horizontalZoom)),
         -(this.canvasHeight - 30),
       );

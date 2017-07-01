@@ -1,23 +1,15 @@
-import { UPDATE_CURRENT_PRICE, HORIZONTAL_GRID_LINES } from './constants';
 import StockChart from './StockChart';
 
 export default class ChartYAxis extends StockChart {
-  // CURRENT PRICE PLACEMENT
-  // currentClose, upperRangeVal, lowerRangeVal
-  YaxisPoint(pointVal, upperVal, lowerVal) {
-    if (!window.chartUpperVal || !window.chartLowerVal) return;
-    const cHeight = this.canvasHeight * 0.9; // 0.9
-    const valRatio = (pointVal - lowerVal) / (upperVal - lowerVal);
-    return (cHeight * valRatio) + (this.canvasHeight * 0.05);
-  }
-
-  // CURRENT PRICE DISPLAY
-  CurrentPrice(currency) {
+  // **************************************
+  // RENDER CURRENT PRICE DISPLAY
+  // **************************************
+  CurrentPrice() {
     if (this.currentPrice === null) return;
     const bgColor = 'red';
     const fgColor = 'white';
     const x = 0;
-    const y = -(this.YaxisPoint(this.currentPrice[currency].rate_float, window.chartUpperVal, window.chartLowerVal));
+    const y = -(this.yAxisPoint(this.currentPrice, window.chartUpperVal, window.chartLowerVal));
     const width = -(this.canvasWidth);
     const height = 40;
     const midPoint = this.canvasHeight * 0.5;
@@ -46,7 +38,7 @@ export default class ChartYAxis extends StockChart {
     this.context.textBaseline = 'middle';
     this.context.fillStyle = fgColor;
     this.context.fillText(
-      (this.currentPrice[currency].rate_float).toFixed(2),
+      (this.currentPrice).toFixed(2),
       width + 20,
       ((y + window.verticalPan) * window.verticalZoom) + (midPoint * window.verticalZoom),
     );
@@ -76,7 +68,7 @@ export default class ChartYAxis extends StockChart {
     };
   }
 
-  upperHorizontalLines(n = ((this.canvasHeight / this.hGridLines) / 2) / 1, hVal = this.yAxisValues(window.chartUpperVal, window.chartLowerVal).highStart, i = 0) {
+  upperHorizontalLines(n = ((this.canvasHeight / this.hGridLines) / 2) / 1, hVal = 0) {
     if (!window.chartUpperVal || !window.chartLowerVal) return;
     const color = '#cccccc';
     const x = -(this.canvasWidth);
@@ -134,7 +126,7 @@ export default class ChartYAxis extends StockChart {
     this.upperHorizontalLines(n + (offset / offsetScale), highVal);
   }
 
-  lowerHorizontalLines(n = ((this.canvasHeight / this.hGridLines) / 2) / 1, lVal = this.yAxisValues(window.chartUpperVal, window.chartLowerVal).lowStart) {
+  lowerHorizontalLines(n = ((this.canvasHeight / this.hGridLines) / 2) / 1, lVal = 0) {
     if (!window.chartUpperVal || !window.chartLowerVal) return;
     const color = '#cccccc';
     const x = -(this.canvasWidth);

@@ -1,5 +1,5 @@
 
-function startChart(chart, yaxis, xaxis, currency) {
+function startChart(chart, yaxis, xaxis) {
   function render() {
     // StockChart
     chart.context.translate(chart.canvasWidth, chart.canvasHeight);
@@ -16,8 +16,8 @@ function startChart(chart, yaxis, xaxis, currency) {
     chart.VerticalLines(0, chart.processDate, 0);
     chart.upperHorizontalLines();
     chart.lowerHorizontalLines();
-    chart.BarData(0, chart.yPointPos, chart.valueRange, 0, currency);
-    chart.CurrentPrice(currency);
+    chart.BarData(0, chart.yPointPos, chart.valueRange, 0);
+    chart.CurrentPrice();
     chart.MonthYear(0, chart.processDate, 0);
     chart.ChartBorder();
     chart.context.restore();
@@ -31,7 +31,7 @@ function startChart(chart, yaxis, xaxis, currency) {
     yaxis.context.save();
     yaxis.upperHorizontalLines();
     yaxis.lowerHorizontalLines();
-    yaxis.CurrentPrice(currency);
+    yaxis.CurrentPrice();
     yaxis.context.restore();
 
     // xAxisChart

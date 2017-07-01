@@ -45,7 +45,7 @@ function loadChart(options) {
   const stockChart = new StockChart(stockChartDOM, Price.historic, Price.current, options);
   const chartYAxis = new ChartYAxis(yaxisDOM, Price.historic, Price.current, options);
   const chartXAxis = new ChartXAxis(xaxisDOM, Price.historic, Price.current, options);
-  chartLoop(stockChart, chartYAxis, chartXAxis, options.currencyPair);
+  chartLoop(stockChart, chartYAxis, chartXAxis);
 }
 
 export default loadChart;
