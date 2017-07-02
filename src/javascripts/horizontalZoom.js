@@ -1,12 +1,12 @@
 window.horizontalZoom = 1;
-var isScaling = false;
+// isScaling will be used for dynamicaly changing horizontal grid line chart
+// values when the sapcing is to great or too small to displau values
+// let isScaling = false;
 
-export default function HorizontalZoom () {
-  'use strict';
-
-  var xaxisContainer = document.querySelector('.xaxis-canvas');
-  var mouseDown = false;
-  var mousePos = null;
+export default function HorizontalZoom() {
+  const xaxisContainer = document.querySelector('.xaxis-canvas');
+  let mouseDown = false;
+  let mousePos = null;
 
   xaxisContainer.onmousemove = function (e) {
     if (!mouseDown) {
@@ -15,25 +15,24 @@ export default function HorizontalZoom () {
 
     if (mousePos) {
       if (mousePos.x > e.clientX) {
-        window.horizontalZoom = window.horizontalZoom + .01;
+        window.horizontalZoom += 0.01;
       }
       if (mousePos.x < e.clientX) {
-        window.horizontalZoom = window.horizontalZoom - .01;
+        window.horizontalZoom -= 0.01;
       }
     }
 
     mousePos = {};
     mousePos.x = e.clientX;
-    console.log('mousemove')
-  }
+  };
 
   xaxisContainer.onmousedown = function () {
     mouseDown = true;
-    isScaling = true;
-  }
+    // isScaling = true;
+  };
 
   xaxisContainer.onmouseup = function () {
     mouseDown = false;
-    isScaling = false;
-  }
-};
+    // isScaling = false;
+  };
+}

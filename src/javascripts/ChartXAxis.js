@@ -5,16 +5,14 @@ export default class ChartXAxis extends StockChart {
   // render vertical lines and first day of week
   // TODO make vLines and day into seperate methods
   // *****************************************************
-  verticalLines(n, date, index) {
-    // debugger;
-    if (this.priceData === null) return;
+  verticalLines(n, date, index, price) {
     let i = index;
     const color = '#ccc';
     const width = 2;
     const height = 15;
     const buffer = 30;
     const offset = 40;
-    if (i >= this.priceData.length - 1) {
+    if (i >= price.history.length - 1) {
       i = 0;
       return;
     }
@@ -38,18 +36,18 @@ export default class ChartXAxis extends StockChart {
 
     this.context.restore();
 
-    if (this.priceData[i].Date.week !== this.priceData[i + 1].Date.week) {
+    if (price.history[i].Date.week !== price.history[i + 1].Date.week) {
       this.context.font = 'normal 20px Arial';
       this.context.textAlign = 'center';
       this.context.textBaseline = 'middle';
       this.context.fillText(
-        this.priceData[i].Date.day,
+        price.history[i].Date.day,
         -(((n + buffer) * window.horizontalZoom) - (window.horizontalPan * window.horizontalZoom)),
         -(this.canvasHeight - 30),
       );
     }
 
     i += 1;
-    this.verticalLines(n + (offset), date, i);
+    this.verticalLines(n + (offset), date, i, price);
   }
 }

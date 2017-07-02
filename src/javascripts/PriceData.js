@@ -47,8 +47,7 @@ export function current(options) {
   return false;
 }
 
-export function historic(options) {
-  console.log(options);
+export function history(options) {
   switch (options.provider) {
     case 'coincap':
     case 'coindesk':

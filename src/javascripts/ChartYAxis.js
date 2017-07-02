@@ -4,14 +4,12 @@ export default class ChartYAxis extends StockChart {
   // **************************************
   // RENDER CURRENT PRICE DISPLAY
   // **************************************
-  CurrentPrice() {
+  CurrentPrice(price) {
     if (!window.chartUpperVal || !window.chartLowerVal) return;
-    if (this.currentPrice === null) return;
     const bgColor = 'red';
     const fgColor = 'white';
     const x = 0;
-    // console.log('ChartAxis', this.currentPrice);
-    const y = -(this.yAxisPoint(this.currentPrice, window.chartUpperVal, window.chartLowerVal));
+    const y = -(this.yAxisPoint(price.current, window.chartUpperVal, window.chartLowerVal));
     const width = -(this.canvasWidth);
     const height = 40;
     const midPoint = this.canvasHeight * 0.5;
@@ -40,7 +38,7 @@ export default class ChartYAxis extends StockChart {
     this.context.textBaseline = 'middle';
     this.context.fillStyle = fgColor;
     this.context.fillText(
-      (this.currentPrice).toFixed(2),
+      (price.current).toFixed(2),
       width + 20,
       ((y + window.verticalPan) * window.verticalZoom) + (midPoint * window.verticalZoom),
     );

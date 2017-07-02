@@ -1,5 +1,4 @@
-// console.log('appsupport laoded!');
-import loadChart from 'javascripts/app';
+import { loadChart, chartLoop, stockChart } from 'javascripts/app';
 import options from 'javascripts/chartOptions';
 
 const provider = document.querySelector('.current-price-provider');
@@ -24,20 +23,19 @@ options.list.currencies.forEach((c) => {
 
 provider.onchange = (e) => {
   options.provider = e.target.value;
+  chartLoop.stop();
   loadChart(options);
 };
 
 coin.onchange = (e) => {
-  window.chartUpperVal = null;
-  window.chartLowerVal = null;
   options.coin = e.target.value;
+  chartLoop.stop();
   loadChart(options);
 };
 
 currency.onchange = (e) => {
-  window.chartUpperVal = null;
-  window.chartLowerVal = null;
   options.currency = e.target.value;
+  chartLoop.stop();
   loadChart(options);
 };
 
