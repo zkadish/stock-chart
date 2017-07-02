@@ -20,6 +20,13 @@ h3 {
   //border: 1px solid red;
 }
 
+.settings {
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+  border: 1px dashed lightblue;
+}
+
 .stock-chart {
   position: relative;
   min-height: 200px;

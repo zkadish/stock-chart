@@ -31,6 +31,7 @@ function startChart(chart, yaxis, xaxis) {
     yaxis.context.save();
     yaxis.upperHorizontalLines();
     yaxis.lowerHorizontalLines();
+    yaxis.upperValues();
     yaxis.CurrentPrice();
     yaxis.context.restore();
 
@@ -45,8 +46,8 @@ function startChart(chart, yaxis, xaxis) {
     xaxis.context.restore();
   }
 
-  // This fuction uses request animaiton frame to create a render loop
-  // for all drawn elements in the canvas.
+  // This fuction uses request animaiton frame to create
+  // a render loop for all drawn elements in the canvas.
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   function update(elapsed) {
       // UPDATE VALUES
@@ -77,7 +78,6 @@ function startChart(chart, yaxis, xaxis) {
     window.requestAnimationFrame(loop);
   }
   window.requestAnimationFrame(loop);
-
 }
 
 export default startChart;

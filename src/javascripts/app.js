@@ -24,18 +24,14 @@ function loadChart(options) {
 
   // set up on window resize event
   const windowOnResize = new CustomEvent('window:onresize');
-
   window.onresize = () => {
     document.dispatchEvent(windowOnResize);
   };
-
   function windowOnResizeHandler() {
-    console.log('app resize');
     containerRect = canvasContainer.getBoundingClientRect();
     resizeContainer.style.width = `${containerRect.width}px`;
     resizeContainer.style.height = `${containerRect.height}px`;
   }
-
   document.addEventListener('window:onresize', windowOnResizeHandler, false);
 
   // initialize the chart

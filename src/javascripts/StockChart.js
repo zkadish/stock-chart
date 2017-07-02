@@ -47,8 +47,9 @@ export default class StockChart {
   currentPriceData(currentPrice, options) {
     const loop = (delay) => {
       const interval = setInterval(() => {
-        console.log('porvider:', options, 'price:', this.currentPrice);
+        // console.log('porvider:', options, 'price:', this.currentPrice);
         currentPrice(options).then((data) => {
+          // debugger;
           this.currentPrice = data;
         });
         clearInterval(interval);
@@ -79,29 +80,30 @@ export default class StockChart {
     this.canvas.style.height = `${this.canvasHeight * 0.5}px`;
   }
 
-  roundOffVals(upperVal, lowerVal) {
-    let range = Math.ceil(upperVal) - Math.floor(lowerVal);
-    let lessThen = false;
+  // roundOffVals(upperVal, lowerVal) {
+  //   debugger;
+  //   let range = Math.ceil(upperVal) - Math.floor(lowerVal);
+  //   let lessThen = false;
 
-    if (range < 17) { // 9
-      lessThen = true;
-      range *= 10;
-    }
+  //   if (range < 17) { // 9
+  //     lessThen = true;
+  //     range *= 10;
+  //   }
 
-    for (let i = 1; i < 17; i += 1) { // 9
-      if (range % 17 === 0) { // 9
-        break;
-      }
-      range += 1;
-    }
+  //   for (let i = 1; i < 17; i += 1) { // 9
+  //     if (range % 17 === 0) { // 9
+  //       break;
+  //     }
+  //     range += 1;
+  //   }
 
-    if (lessThen) {
-      range /= 10;
-    }
+  //   if (lessThen) {
+  //     range /= 10;
+  //   }
 
-    this.chartUpperVal = this.chartUpperVal + (range - (Math.ceil(upperVal) - Math.floor(lowerVal))) / 2;
-    this.chartLowerVal = this.chartLowerVal - (range - (Math.ceil(upperVal) - Math.floor(lowerVal))) / 2;
-  }
+  //   this.chartUpperVal = this.chartUpperVal + (range - (Math.ceil(upperVal) - Math.floor(lowerVal))) / 2;
+  //   this.chartLowerVal = this.chartLowerVal - (range - (Math.ceil(upperVal) - Math.floor(lowerVal))) / 2;
+  // }
 
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   // Y POSITION - BAR DATA
@@ -136,13 +138,15 @@ export default class StockChart {
       return;
     }
     if (upper && priceData.High > this[prop]) {
-      this[prop] = Math.ceil(priceData.High);
+      // this[prop] = Math.ceil(priceData.High);
+      this[prop] = priceData.High;
       window[prop] = priceData.High;
       // console.log('upper', this.chartUpperVal);
       return;
     }
     if (!upper && priceData.Low < this[prop]) {
-      this[prop] = Math.ceil(priceData.Low);
+      // this[prop] = Math.ceil(priceData.Low);
+      this[prop] = priceData.Low;
       window[prop] = priceData.Low;
       // console.log('lower', this.chartLowerVal);
     }
@@ -172,13 +176,6 @@ export default class StockChart {
     }
     if (((n + buffer) * window.horizontalZoom) > this.canvasWidth + (window.horizontalPan * window.horizontalZoom)) {
       i = 0;
-      const priceValueRange = new CustomEvent('pricevalue:range', {
-        detail: {
-          chartUpperVal: this.chartUpperVal,
-          chartLowerVal: this.chartLowerVal,
-        },
-      });
-      document.dispatchEvent(priceValueRange);
       // why? not sure I need to be rounding the values anymore...
       // this.roundOffVals(this.chartUpperVal, this.chartLowerVal);
       return;
@@ -343,14 +340,26 @@ export default class StockChart {
   }
 
   // ***********************************************
+  // CURRENT PRICE PLACEMENT
+  // ***********************************************
+  yAxisPoint(pointVal, upperVal, lowerVal) {
+    // console.log('yAxisPoint', pointVal, upperVal, lowerVal);
+    const cHeight = this.canvasHeight * 0.9;
+    const valRatio = (pointVal - lowerVal) / (upperVal - lowerVal);
+    return (cHeight * valRatio) + (this.canvasHeight * 0.05);
+  }
+  // ***********************************************
   // CURRENT PRICE LINE
   // ***********************************************  
   CurrentPrice() {
+    // debugger;
     if (this.currentPrice === null) return;
     const color = 'red';
     const x = 0;
     // *****************************************
     // const y = -(this.yAxisPoint(this.priceData[0].Close, this.chartUpperVal, this.chartLowerVal));
+    // console.log('StockChart', this.currentPrice);
+    // debugger;
     const y = -(this.yAxisPoint(this.currentPrice, this.chartUpperVal, this.chartLowerVal));
     // *****************************************
     const width = -(this.canvasWidth);
@@ -490,13 +499,6 @@ export default class StockChart {
     this.context.fillStyle = color;
     this.context.rect(-(this.canvasWidth), 0, 2, -(this.canvasHeight));
     this.context.fill();
-  }
-
-  // CURRENT PRICE PLACEMENT
-  yAxisPoint(pointVal, upperVal, lowerVal) {
-    const cHeight = this.canvasHeight * 0.9;
-    const valRatio = (pointVal - lowerVal) / (upperVal - lowerVal);
-    return (cHeight * valRatio) + (this.canvasHeight * 0.05);
   }
 
   // function VerticalMidPoint () {

@@ -5,10 +5,12 @@ export default class ChartYAxis extends StockChart {
   // RENDER CURRENT PRICE DISPLAY
   // **************************************
   CurrentPrice() {
+    if (!window.chartUpperVal || !window.chartLowerVal) return;
     if (this.currentPrice === null) return;
     const bgColor = 'red';
     const fgColor = 'white';
     const x = 0;
+    // console.log('ChartAxis', this.currentPrice);
     const y = -(this.yAxisPoint(this.currentPrice, window.chartUpperVal, window.chartLowerVal));
     const width = -(this.canvasWidth);
     const height = 40;
@@ -68,7 +70,46 @@ export default class ChartYAxis extends StockChart {
     };
   }
 
-  upperHorizontalLines(n = ((this.canvasHeight / this.hGridLines) / 2) / 1, hVal = 0) {
+  upperHorizontalLines(n = ((this.canvasHeight / this.hGridLines) / 2) / 1) {
+    if (!window.chartUpperVal || !window.chartLowerVal) return;
+    const color = '#ccc';
+    const x = -(this.canvasWidth);
+    const width = 15;
+    const height = 2;
+    const offset = this.canvasHeight / this.hGridLines;
+    let offsetScale = 1;
+    const midPoint = this.canvasHeight * 0.5;
+
+    if (n * window.verticalZoom > (this.canvasHeight * 0.5) + (window.verticalPan * window.verticalZoom)) {
+      if (window.verticalZoom <= 0.5) {
+        offsetScale = 0.5;
+      }
+      if (window.verticalZoom > 0.5) {
+        offsetScale = 1;
+      }
+      return;
+    }
+
+    this.context.save();
+    this.context.beginPath();
+
+    this.context.transform(1, 0, 0, window.verticalZoom, 0, -(this.canvasHeight * 0.5));
+    this.context.transform(1, 0, 0, 1, 0, (this.canvasHeight * 0.5) - (window.verticalPan));
+
+    this.context.fillStyle = color;
+    this.context.fillRect(
+      x,
+      -(midPoint + n) + (window.verticalPan + window.verticalPan),
+      width,
+      height / window.verticalZoom,
+    );
+    this.context.restore();
+
+    this.upperHorizontalLines(n + (offset / offsetScale));
+  }
+
+  // upperHorizontalLines(n = ((this.canvasHeight / this.hGridLines) / 2) / 1, hVal = this.yAxisValues(window.chartUpperVal, window.chartLowerVal).highStart, i = 0) {
+  upperValues(n = ((this.canvasHeight / this.hGridLines) / 2) / 1, hVal = this.yAxisValues(window.chartUpperVal, window.chartLowerVal).highStart) {
     if (!window.chartUpperVal || !window.chartLowerVal) return;
     const color = '#cccccc';
     const x = -(this.canvasWidth);
@@ -96,19 +137,19 @@ export default class ChartYAxis extends StockChart {
       return;
     }
 
-    this.context.save();
-    this.context.beginPath();
-    this.context.transform(1, 0, 0, window.verticalZoom, 0, -(this.canvasHeight * 0.5));
-    this.context.transform(1, 0, 0, 1, 0, (this.canvasHeight * 0.5) - (window.verticalPan));
+    // this.context.save();
+    // this.context.beginPath();
+    // this.context.transform(1, 0, 0, window.verticalZoom, 0, -(this.canvasHeight * 0.5));
+    // this.context.transform(1, 0, 0, 1, 0, (this.canvasHeight * 0.5) - (window.verticalPan));
 
-    this.context.fillStyle = color;
-    this.context.fillRect(
-      x,
-      -(midPoint + n) + (window.verticalPan + window.verticalPan),
-      width,
-      height / window.verticalZoom,
-    );
-    this.context.restore();
+    // // this.context.fillStyle = color;
+    // // this.context.fillRect(
+    // //   x,
+    // //   -(midPoint + n) + (window.verticalPan + window.verticalPan),
+    // //   width,
+    // //   height / window.verticalZoom,
+    // // );
+    // this.context.restore();
 
     this.context.save();
     this.context.beginPath();
@@ -123,10 +164,10 @@ export default class ChartYAxis extends StockChart {
     this.context.restore();
 
     highVal += +(yVals.offset * yValsScale);
-    this.upperHorizontalLines(n + (offset / offsetScale), highVal);
+    this.upperValues(n + (offset / offsetScale), highVal);
   }
 
-  lowerHorizontalLines(n = ((this.canvasHeight / this.hGridLines) / 2) / 1, lVal = 0) {
+  lowerHorizontalLines(n = ((this.canvasHeight / this.hGridLines) / 2) / 1, lVal = this.yAxisValues(window.chartUpperVal, window.chartLowerVal).lowStart) {
     if (!window.chartUpperVal || !window.chartLowerVal) return;
     const color = '#cccccc';
     const x = -(this.canvasWidth);

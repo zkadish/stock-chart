@@ -12,27 +12,19 @@ function processDate(isoDate) {
   };
 }
 
-// coindesk: http://www.coindesk.com/api/
 export function current(options) {
-  // debugger;
   const protocol = window.location.protocol;
 
   switch (options.provider) {
     case 'coindesk':
-      return fetch(`${protocol}//api.coindesk.com/v1/bpi/currentprice/${options.currency}.json`, {
+      // coindesk api only returns BTC/USD - http://www.coindesk.com/api/
+      return fetch(`${protocol}//api.coindesk.com/v1/bpi/currentprice/USD.json`, {
         method: 'GET',
-      }).then(response => response.json()).then(json => json.bpi);
-      // json.bpi = {
-      //   USD: {
-      //     code: "USD",
-      //       rate: "2,636.0838",
-      //       description: "United States Dollar",
-      //       rate_float: 2636.0838 - chart uses this prop only...
-      //   }
-      // }
+      }).then(response => response.json())
+        .then(json => json.bpi.USD.rate_float);
     case 'coincap':
-      // coincap can't change currency pair
-      return fetch(`http://www.coincap.io/page/${options.coin}`, {
+      // coincap's api only returns BTC/USD
+      return fetch('http://www.coincap.io/page/BTC', {
         method: 'GET',
       }).then(response => response.json())
         .then((data) => {
@@ -45,6 +37,8 @@ export function current(options) {
         return response.json();
       }).then((data) => {
         return data.RAW[options.coin][options.currency].PRICE;
+      }).catch((err) => {
+        console.log('ERROR: fetch current price cryptocompare - ', err);
       });
     default:
       console.log('Error: priceData.js "no current price provider"');
@@ -54,8 +48,10 @@ export function current(options) {
 }
 
 export function historic(options) {
+  console.log(options);
   switch (options.provider) {
-    case 'coindesk' || 'coincap':
+    case 'coincap':
+    case 'coindesk':
       return fetch(`https://www.quandl.com/api/v3/datasets/BCHARTS/BITSTAMP${options.currency}.json?limit=100&end_date=&api_key=wHW3yQNffR6nKooC_ZhJ`, {
         method: 'GET',
       }).then(response => response.json())
@@ -79,10 +75,6 @@ export function historic(options) {
         // translate to someting you can use on the chart
         const ohlc = json.Data.map((d) => {
           const time = (new Date(Number(`${d.time}000`))).toISOString();
-          // debugger;
-          // const year = moment(time).year();
-          // const month = moment(time).month() + 1 < 10 ? `0${moment(time).month() + 1}` : moment(time).month() + 1;
-          // const date = moment(time).date() < 10 ? `0${moment(time).date()}` : moment(time).date();
           return {
             Close: d.close,
             Date: processDate(time),
@@ -94,6 +86,8 @@ export function historic(options) {
           };
         }).reverse();
         return ohlc;
+      }).catch((err) => {
+        console.log('ERROR: fetch historic price cryptocompare - ', err);
       });
     default:
       console.log('Error: historicData.js "no historic price proider"');
