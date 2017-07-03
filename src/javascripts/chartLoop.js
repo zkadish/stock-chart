@@ -1,5 +1,7 @@
+import * as request from './requests';
+// import options from './chartLoop';
 
-class startChart {
+class ChartLoop {
   constructor(chart, yaxis, xaxis) {
     this.chart = chart;
     this.yaxis = yaxis;
@@ -56,14 +58,14 @@ class startChart {
     this.xaxis.context.restore();
   }
 
-  // This fuction uses request animaiton frame to create
-  // a render loop for all drawn elements in the canvas.
-  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  // function update(elapsed) {
-  //     // UPDATE VALUES
-  // }
-  // let loopCount = 0;
-  // let lastUpdate = null;
+  currentPrice(options) {
+    return setInterval(() => {
+      request.current(options).then((price) => {
+        // console.log('currentPrice', price);
+        this.price = { ...this.price, current: price };
+      });
+    }, 10000);
+  }
 
   stop() {
     window.cancelAnimationFrame(this.rafId);
@@ -72,6 +74,14 @@ class startChart {
     return true;
   }
 
+  // This fuction uses request animaiton frame to create
+  // a render loop for all drawn elements in the canvas.
+  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  // function update(elapsed) {
+  //     // UPDATE VALUES
+  // }
+  // let loopCount = 0;
+  // let lastUpdate = null;
   loop(timeStamp, price) {
     if (price) this.price = price;
 
@@ -97,4 +107,4 @@ class startChart {
   }
 }
 
-export default startChart;
+export default ChartLoop;

@@ -1,5 +1,5 @@
-import { loadChart, chartLoop, stockChart } from 'javascripts/app';
 import options from 'javascripts/chartOptions';
+import Chart from '../../webpack-dev-entry';
 
 const provider = document.querySelector('.current-price-provider');
 const coin = document.querySelector('.coin-type');
@@ -23,19 +23,19 @@ options.list.currencies.forEach((c) => {
 
 provider.onchange = (e) => {
   options.provider = e.target.value;
-  chartLoop.stop();
-  loadChart(options);
+  Chart.loop.stop();
+  Chart.loadChart(options);
 };
 
 coin.onchange = (e) => {
   options.coin = e.target.value;
-  chartLoop.stop();
-  loadChart(options);
+  Chart.loop.stop();
+  Chart.loadChart(options);
 };
 
 currency.onchange = (e) => {
   options.currency = e.target.value;
-  chartLoop.stop();
-  loadChart(options);
+  Chart.loop.stop();
+  Chart.loadChart(options);
 };
 

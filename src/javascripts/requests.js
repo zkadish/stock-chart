@@ -1,4 +1,3 @@
-// import { PROVIDER_CURRENT_PRICE } from './constants';
 import moment from 'moment';
 
 function processDate(isoDate) {
@@ -27,9 +26,7 @@ export function current(options) {
       return fetch('http://www.coincap.io/page/BTC', {
         method: 'GET',
       }).then(response => response.json())
-        .then((data) => {
-          return Number(data.btcPrice);
-        });
+        .then(data => Number(data.btcPrice));
     case 'cryptocompare':
       return fetch(`https://min-api.cryptocompare.com/data/pricemultifull?fsyms=${options.coin}&tsyms=${options.currency}`, {
         method: 'GET',

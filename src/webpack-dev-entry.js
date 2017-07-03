@@ -1,10 +1,11 @@
 import 'stylesheets/page.scss';
 import 'stylesheets/style.scss';
 
-import options from 'javascripts/chartOptions';
-import { loadChart } from 'javascripts/app';
+// import options from 'javascripts/chartOptions';
+import Chart from 'javascripts/app';
 import 'javascripts/support/app-support';
 
-loadChart(options);
+const chart = new Chart();
+chart.initChart();
 
-export default loadChart;
+export default chart;
