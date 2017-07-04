@@ -12,7 +12,7 @@ const extractSass = new ExtractTextWebpackPlugin({
   // disable: process.env.NODE_ENV === 'development',
 });
 
-const ENTRY_PATH = process.env.NODE_ENV === 'development' ? './src/webpack-dev-entry.js' : './src/javascripts/app.js';
+const ENTRY_PATH = process.env.NODE_ENV === 'development' ? './src/javascripts/support/app-support.js' : './src/javascripts/app.js';
 
 console.log('GLOBALS:', GLOBALS.__DEV__);
 console.log('process.env.NODE_ENV:', process.env.NODE_ENV);
@@ -20,6 +20,7 @@ console.log('entryPath:', ENTRY_PATH);
 
 module.exports = {
   entry: {
+    // 'app-support': './src/javascripts/support/app-support.js',
     'stock-chart': ENTRY_PATH,
   },
   output: {

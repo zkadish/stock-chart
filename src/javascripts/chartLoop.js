@@ -1,5 +1,4 @@
 import * as request from './requests';
-// import options from './chartLoop';
 
 class ChartLoop {
   constructor(chart, yaxis, xaxis) {
@@ -11,9 +10,12 @@ class ChartLoop {
     this.lastUpdate = null;
     this.loop = this.loop.bind(this);
     this.rafId = null;
+    this.curPriceInt = null;
+    this.chartStopped = false;
   }
 
   render(price) {
+    // console.log(this.chartStopped);
     this.chart.context.translate(this.chart.canvasWidth, this.chart.canvasHeight);
     this.chart.context.restore();
     this.chart.context.clearRect(0, 0, -(this.chart.canvasWidth), -(this.chart.canvasHeight));
@@ -59,19 +61,22 @@ class ChartLoop {
   }
 
   currentPrice(options) {
-    return setInterval(() => {
+    // console.log('currentPrice');
+    this.curPriceInt = setInterval(() => {
       request.current(options).then((price) => {
-        // console.log('currentPrice', price);
+        console.log('currentPrice:', options.coin, options.currency, price);
         this.price = { ...this.price, current: price };
       });
     }, 10000);
   }
 
   stop() {
-    window.cancelAnimationFrame(this.rafId);
-    this.chart.chartUpperVal = null;
-    this.chart.chartLowerVal = null;
-    return true;
+    clearInterval(this.curPriceInt);
+    this.chartStopped = true;
+  }
+
+  start() {
+    this.chartStopped = false;
   }
 
   // This fuction uses request animaiton frame to create
@@ -82,14 +87,12 @@ class ChartLoop {
   // }
   // let loopCount = 0;
   // let lastUpdate = null;
-  loop(timeStamp, price) {
-    if (price) this.price = price;
 
+  loop(timeStamp, price) {
     // console.log('loop');
-    // if (loopCount === 1000) {
-    //   console.log('canvas loop stopped!');
-    //   return;
-    // }
+    // the next time loop executes raf doesn't pass the price so
+    // the value is only defined the first time the loop executs
+    if (price) this.price = price;
 
     const now = window.Date.now();
 
@@ -100,6 +103,13 @@ class ChartLoop {
       this.render(this.price);
     } else {
       this.lastUpdate = now;
+    }
+
+    if (this.chartStopped) {
+      window.cancelAnimationFrame(this.rafId + 1);
+      this.chart.chartUpperVal = null;
+      this.chart.chartLowerVal = null;
+      return;
     }
 
     // loopCount += 1;

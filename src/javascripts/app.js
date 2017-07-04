@@ -2,7 +2,7 @@ import ChartLoop from 'javascripts/chartLoop';
 import StockChart from 'javascripts/StockChart';
 import ChartYAxis from 'javascripts/ChartYAxis';
 import ChartXAxis from 'javascripts/ChartXAxis';
-import options from 'javascripts/chartOptions';
+import Options from 'javascripts/chartOptions';
 import HorizontalZoom from 'javascripts/horizontalZoom';
 import VerticalZoom from 'javascripts/verticalZoom';
 import HorzVertPanning from 'javascripts/horzVertPanning';
@@ -41,28 +41,41 @@ class Chart {
     VerticalZoom();
     HorzVertPanning();
 
-    this.options = options;
+    this.options = Options;
     this.stockChart = null;
     this.chartLoop = null;
   }
 
-  initChart(options) {
+  init() {
     // this.options = options;
     this.stockChart = new StockChart(this.stockChartDOM);
     const chartYAxis = new ChartYAxis(this.yaxisDOM);
     const chartXAxis = new ChartXAxis(this.xaxisDOM);
     this.loop = new ChartLoop(this.stockChart, chartYAxis, chartXAxis);
-    this.loadChart();
+    this.start();
   }
 
-  loadChart() {
+  start(options) {
+    this.options = options || this.options;
     Promise.all([
       request.current(this.options),
       request.history(this.options),
     ]).then((data) => {
-      this.loop.loop(null, { current: data[0], history: data[1] });
+      this.loop.start();
       this.loop.currentPrice(this.options);
+      this.loop.loop(null, { current: data[0], history: data[1] });
     });
+  }
+
+  stop() {
+    // cancel animation frame loop, clear current price
+    // interval, reset upper and lower range values
+    this.loop.stop();
+  }
+
+  update(options) {
+    this.start(options);
+    this.stop();
   }
 }
 
