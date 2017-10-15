@@ -106,6 +106,7 @@ export default class StockChart {
   setUpperRange(priceData, UpperVal) {
     if (!this.UpperVal) {
       this.UpperVal = priceData.High;
+      window.UpperVal = priceData.High;      
     }
     if (priceData.High > this.UpperVal) {
       this.UpperVal = priceData.High;
@@ -116,10 +117,11 @@ export default class StockChart {
   setLowerRange(priceData, LowerVal) {
     if (!this.LowerVal) {
       this.LowerVal = priceData.Low;
+      window.LowerVal = priceData.Low;      
     }
     if (priceData.Low < this.LowerVal) {
       this.LowerVal = priceData.Low;
-      window.LowerVal = priceData.Low;      
+      window.LowerVal = priceData.Low;
     }
   }
 
