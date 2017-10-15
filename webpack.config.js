@@ -3,19 +3,22 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextWebpackPlugin = require('extract-text-webpack-plugin');
 
+const DEV_PATH = './src/javascripts/support/app-support.js';
+const PROD_PATH = './src/javascripts/app.js';
+let ENTRY_PATH = null;
+if (process.env.NODE_ENV === 'development') ENTRY_PATH = DEV_PATH;
+if (process.env.NODE_ENV === 'production') ENTRY_PATH = PROD_PATH;
+
 const extractSass = new ExtractTextWebpackPlugin({
   filename: '[name].css',
   disable: process.env.NODE_ENV === 'development',
 });
-
-const ENTRY_PATH = process.env.NODE_ENV === 'development' ? './src/javascripts/support/app-support.js' : './src/javascripts/app.js';
 
 console.log('process.env.NODE_ENV:', process.env.NODE_ENV);
 console.log('entryPath:', ENTRY_PATH);
 
 module.exports = {
   entry: {
-    // 'app-support': './src/javascripts/support/app-support.js',
     'stock-chart': ENTRY_PATH,
   },
   output: {
@@ -34,11 +37,11 @@ module.exports = {
       {
         test: /\.(scss|css)$/,
         loader: extractSass.extract({
-          use: [{
-            loader: 'css-loader',
-          }, {
-            loader: 'sass-loader',
-          }],
+          use: [
+            { loader: 'css-loader', options: { importLoaders: 1 } },
+            'postcss-loader',
+            { loader: 'sass-loader' },
+          ],
           fallback: 'style-loader',
         }),
       },
@@ -47,8 +50,8 @@ module.exports = {
   resolve: {
     extensions: ['*', '.js', '.jsx'],
     alias: {
-      'src': path.resolve(__dirname, 'src'),
-    }
+      src: path.resolve(__dirname, 'src'),
+    },
   },
   plugins: [
     new webpack.DefinePlugin({
@@ -60,7 +63,7 @@ module.exports = {
     }),
     extractSass,
   ],
-  devtool: 'cheap-module-eval-source-map',
+  devtool: 'cheap-module-source-map',
   devServer: {
     contentBase: '/dist',
     hot: true,
