@@ -1,6 +1,6 @@
-import 'stylesheets/page.scss';
+import 'src/stylesheets/page.scss';
 
-import Chart from 'javascripts/app';
+import Chart from 'src/javascripts/app';
 
 const provider = document.querySelector('.current-price-provider');
 const coin = document.querySelector('.coin-type');

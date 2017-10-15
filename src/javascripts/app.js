@@ -1,40 +1,40 @@
-import ChartLoop from 'javascripts/chartLoop';
-import StockChart from 'javascripts/StockChart';
-import ChartYAxis from 'javascripts/ChartYAxis';
-import ChartXAxis from 'javascripts/ChartXAxis';
-import Options from 'javascripts/chartOptions';
-import HorizontalZoom from 'javascripts/horizontalZoom';
-import VerticalZoom from 'javascripts/verticalZoom';
-import HorzVertPanning from 'javascripts/horzVertPanning';
-import * as request from 'javascripts/requests';
+import ChartLoop from 'src/javascripts/chartLoop';
+import StockChart from 'src/javascripts/StockChart';
+import ChartYAxis from 'src/javascripts/ChartYAxis';
+import ChartXAxis from 'src/javascripts/ChartXAxis';
+import Options from 'src/javascripts/chartOptions';
+import HorizontalZoom from 'src/javascripts/horizontalZoom';
+import VerticalZoom from 'src/javascripts/verticalZoom';
+import HorzVertPanning from 'src/javascripts/horzVertPanning';
+import * as request from 'src/javascripts/requests';
 
-import 'stylesheets/style.scss';
+import 'src/stylesheets/style.scss';
 
 class Chart {
   constructor() {
     // DOM set up
+    // TODO: create all dom elements with js...
     this.stockChartDOM = document.querySelector('.stockchart-container');
     this.yaxisDOM = document.querySelector('.yaxis-container');
     this.xaxisDOM = document.querySelector('.xaxis-container');
-
     const canvasContainer = document.querySelector('.canvas-container');
-    const resizeContainer = document.querySelector('.resize-container');
-    let containerRect = canvasContainer.getBoundingClientRect();
 
-    resizeContainer.style.width = `${containerRect.width}px`;
-    resizeContainer.style.height = `${containerRect.height}px`;
+    // const resizeContainer = document.querySelector('.resize-container');
+    // const containerRect = canvasContainer.getBoundingClientRect();
+    // resizeContainer.style.width = `${containerRect.width}px`;
+    // resizeContainer.style.height = `${containerRect.height}px`;
 
     // set up on window resize event
+    // function windowOnResizeHandler() {
+    //   // containerRect = canvasContainer.getBoundingClientRect();
+    //   // resizeContainer.style.width = `${containerRect.width}px`;
+    //   // resizeContainer.style.height = `${containerRect.height}px`;
+    // }
+    // document.addEventListener('window:onresize', null, false);
     const windowOnResize = new CustomEvent('window:onresize');
     window.onresize = () => {
       document.dispatchEvent(windowOnResize);
     };
-    function windowOnResizeHandler() {
-      containerRect = canvasContainer.getBoundingClientRect();
-      resizeContainer.style.width = `${containerRect.width}px`;
-      resizeContainer.style.height = `${containerRect.height}px`;
-    }
-    document.addEventListener('window:onresize', windowOnResizeHandler, false);
 
     // initialize chart mouse evetns
     HorizontalZoom();
@@ -42,20 +42,11 @@ class Chart {
     HorzVertPanning();
 
     this.options = Options;
-    this.stockChart = null;
-    this.chartLoop = null;
+    // this.stockChart = null;
+    this.loop = null;
   }
 
-  init() {
-    // this.options = options;
-    this.stockChart = new StockChart(this.stockChartDOM);
-    const chartYAxis = new ChartYAxis(this.yaxisDOM);
-    const chartXAxis = new ChartXAxis(this.xaxisDOM);
-    this.loop = new ChartLoop(this.stockChart, chartYAxis, chartXAxis);
-    this.start();
-  }
-
-  start(options) {
+  onStart(options) {
     this.options = options || this.options;
     Promise.all([
       request.current(this.options),
@@ -67,15 +58,24 @@ class Chart {
     });
   }
 
-  stop() {
+  onStop() {
     // cancel animation frame loop, clear current price
     // interval, reset upper and lower range values
     this.loop.stop();
   }
 
   update(options) {
-    this.start(options);
-    this.stop();
+    this.onStart(options);
+    this.onStop();
+  }
+
+  init() {
+    // this.options = options;
+    const stockChart = new StockChart(this.stockChartDOM);
+    const chartYAxis = new ChartYAxis(this.yaxisDOM);
+    const chartXAxis = new ChartXAxis(this.xaxisDOM);
+    this.loop = new ChartLoop(stockChart, chartYAxis, chartXAxis);
+    this.onStart();
   }
 }
 

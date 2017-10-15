@@ -1,5 +1,4 @@
 // import moment from 'moment';
-
 import { HORIZONTAL_GRID_LINES } from './constants';
 
 // TODO: Fix pan and zoom events so they release on document.mouseup and
@@ -23,20 +22,20 @@ export default class StockChart {
     this.canvas.style.width = `${this.canvasWidth * 0.5}px`;
     this.canvas.style.height = `${this.canvasHeight * 0.5}px`;
 
-    // yaxis
+    // yaxis uses these values
     this.hGridLines = HORIZONTAL_GRID_LINES; // 18
-    this.chartUpperVal = null;
-    this.chartLowerVal = null;
+
+    this.UpperVal = null;
+    this.LowerVal = null;
 
     this.yPointPos = this.yPointPos.bind(this);
     this.valueRange = this.valueRange.bind(this);
 
-    this.windowOnResizeHandler = this.windowOnResizeHandler.bind(this);
     document.addEventListener('window:onresize', this.windowOnResizeHandler, false);
   }
 
   // yaxis, xaxis
-  windowOnResizeHandler() {
+  windowOnResizeHandler = () => {
     this.containerRect = this.canvasContainer.getBoundingClientRect();
     this.canvasWidth = this.containerRect.width * 2;
     this.canvasHeight = this.containerRect.height * 2;
@@ -69,13 +68,18 @@ export default class StockChart {
   //     range /= 10;
   //   }
 
-  //   this.chartUpperVal = this.chartUpperVal + (range - (Math.ceil(upperVal) - Math.floor(lowerVal))) / 2;
-  //   this.chartLowerVal = this.chartLowerVal - (range - (Math.ceil(upperVal) - Math.floor(lowerVal))) / 2;
+  //   this.UpperVal = this.UpperVal + (range - (Math.ceil(upperVal) - Math.floor(lowerVal))) / 2;
+  //   this.LowerVal = this.LowerVal - (range - (Math.ceil(upperVal) - Math.floor(lowerVal))) / 2;
   // }
 
-  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  // Y POSITION - BAR DATA
-  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  /**
+   * Y POSITION - gets passed into barData via chartLoop
+   * determines where to render elements based on a ratio
+   * relative to the height of chart
+   * @param {*} pointVal 
+   * @param {*} upperVal 
+   * @param {*} lowerVal 
+   */
   yPointPos(pointVal, upperVal, lowerVal) {
     // half the height of a grid space, accounts
     // for small buffer on top and bottom of chart
@@ -94,41 +98,44 @@ export default class StockChart {
     return yPos;
   }
 
-  // ********************************************
-  // Get the high and low values of the data set
-  // ********************************************
-  setRange(priceData, chartVal, upper) {
-    let prop = null;
-    prop = upper ? 'chartUpperVal' : 'chartLowerVal';
-    if (!chartVal) {
-      this[prop] = upper ? priceData.High : priceData.Low;
-      return;
+  /**
+   * Get the high and low values of the current visible price data
+   * @param {*} priceData 
+   * @param {*} UpperVal, LowerVal
+   */
+  setUpperRange(priceData, UpperVal) {
+    if (!this.UpperVal) {
+      this.UpperVal = priceData.High;
     }
-    if (upper && priceData.High > this[prop]) {
-      // this[prop] = Math.ceil(priceData.High);
-      this[prop] = priceData.High;
-      window[prop] = priceData.High;
-      // console.log('upper', this.chartUpperVal);
-      // console.log('setRange upper', window.chartUpperVal);
-      return;
-    }
-    if (!upper && priceData.Low < this[prop]) {
-      // this[prop] = Math.ceil(priceData.Low);
-      this[prop] = priceData.Low;
-      window[prop] = priceData.Low;
-      // console.log('lower', this.chartLowerVal);
-      // console.log('setRange lower', window.chartLowerVal);
+    if (priceData.High > this.UpperVal) {
+      this.UpperVal = priceData.High;
+      window.UpperVal = priceData.High;
     }
   }
 
-  valueRange(priceData, chartUpperVal, chartLowerVal) {
-    this.setRange(priceData, chartUpperVal, true);
-    this.setRange(priceData, chartLowerVal, false);
+  setLowerRange(priceData, LowerVal) {
+    if (!this.LowerVal) {
+      this.LowerVal = priceData.Low;
+    }
+    if (priceData.Low < this.LowerVal) {
+      this.LowerVal = priceData.Low;
+      window.LowerVal = priceData.Low;      
+    }
   }
 
-  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  // BAR DISPLAY
-  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  valueRange(priceData, UpperVal, LowerVal) {
+    this.setUpperRange(priceData, UpperVal);
+    this.setLowerRange(priceData, LowerVal);
+  }
+
+  /**
+   * Draw Bars into the Main Chart
+   * @param {*} n 
+   * @param {*} yPos 
+   * @param {*} vRange 
+   * @param {*} index 
+   * @param {*} price 
+   */
   BarData(n, yPos, vRange, index, price) {
     let i = index;
     const color = 'black';
@@ -143,24 +150,27 @@ export default class StockChart {
     if (((n + buffer) * window.horizontalZoom) > this.canvasWidth + (window.horizontalPan * window.horizontalZoom)) {
       i = 0;
       // why? not sure I need to be rounding the values anymore...
-      // this.roundOffVals(this.chartUpperVal, this.chartLowerVal);
+      // this.roundOffVals(this.UpperVal, this.LowerVal);
       return;
     }
     
-    this.valueRange(price.history[i], this.chartUpperVal, this.chartLowerVal);
+    /**
+     * chart high and low values start here...
+     */
+    this.valueRange(price.history[i], this.UpperVal, this.LowerVal);
 
-    let barHighPos = yPos(price.history[i].High, this.chartUpperVal, this.chartLowerVal);
-    let barLowPos = yPos(price.history[i].Low, this.chartUpperVal, this.chartLowerVal);
-    const barOpenPos = yPos(price.history[i].Open, this.chartUpperVal, this.chartLowerVal);
-    let barClosePos = yPos(price.history[i].Close, this.chartUpperVal, this.chartLowerVal);
+    let barHighPos = yPos(price.history[i].High, this.UpperVal, this.LowerVal);
+    let barLowPos = yPos(price.history[i].Low, this.UpperVal, this.LowerVal);
+    const barOpenPos = yPos(price.history[i].Open, this.UpperVal, this.LowerVal);
+    let barClosePos = yPos(price.history[i].Close, this.UpperVal, this.LowerVal);
     // handle current price updates
     if (i === 0) {
-      barClosePos = yPos(price.current, this.chartUpperVal, this.chartLowerVal);
+      barClosePos = yPos(price.current, this.UpperVal, this.LowerVal);
       if (barHighPos < barClosePos) {
-        barHighPos = yPos(price.current, this.chartUpperVal, this.chartLowerVal);        
+        barHighPos = yPos(price.current, this.UpperVal, this.LowerVal);        
       }
       if (barLowPos > barClosePos) {
-        barLowPos = yPos(price.current, this.chartUpperVal, this.chartLowerVal);        
+        barLowPos = yPos(price.current, this.UpperVal, this.LowerVal);        
       }
     }
 
@@ -322,10 +332,10 @@ export default class StockChart {
     const color = 'red';
     const x = 0;
     // *****************************************
-    // const y = -(this.yAxisPoint(this.priceData[0].Close, this.chartUpperVal, this.chartLowerVal));
+    // const y = -(this.yAxisPoint(this.priceData[0].Close, this.UpperVal, this.LowerVal));
     // console.log('StockChart', this.currentPrice);
     // debugger;
-    const y = -(this.yAxisPoint(price.current, this.chartUpperVal, this.chartLowerVal));
+    const y = -(this.yAxisPoint(price.current, this.UpperVal, this.LowerVal));
     // *****************************************
     const width = -(this.canvasWidth);
     const height = 2;

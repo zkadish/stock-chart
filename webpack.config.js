@@ -1,20 +1,15 @@
-const webpack = require('webpack');
 const path = require('path');
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextWebpackPlugin = require('extract-text-webpack-plugin');
 
-const GLOBALS = {
-  __DEV__: JSON.stringify(process.env.NODE_ENV === 'development'),
-};
-
 const extractSass = new ExtractTextWebpackPlugin({
   filename: '[name].css',
-  // disable: process.env.NODE_ENV === 'development',
+  disable: process.env.NODE_ENV === 'development',
 });
 
 const ENTRY_PATH = process.env.NODE_ENV === 'development' ? './src/javascripts/support/app-support.js' : './src/javascripts/app.js';
 
-console.log('GLOBALS:', GLOBALS.__DEV__);
 console.log('process.env.NODE_ENV:', process.env.NODE_ENV);
 console.log('entryPath:', ENTRY_PATH);
 
@@ -29,18 +24,15 @@ module.exports = {
     library: 'stockChart',
     libraryTarget: 'umd',
   },
-  resolve: {
-    extensions: ['*', '.js', '.jsx'],
-    modules: ['src', 'node_modules'],
-  },
   module: {
     rules: [
       {
         test: /\.js$/,
         loader: 'babel-loader',
+        exclude: /node_modules/,
       },
       {
-        test: /\.scss|.css?$/,
+        test: /\.(scss|css)$/,
         loader: extractSass.extract({
           use: [{
             loader: 'css-loader',
@@ -52,8 +44,17 @@ module.exports = {
       },
     ],
   },
+  resolve: {
+    extensions: ['*', '.js', '.jsx'],
+    alias: {
+      'src': path.resolve(__dirname, 'src'),
+    }
+  },
   plugins: [
-    new webpack.DefinePlugin(GLOBALS),
+    new webpack.DefinePlugin({
+      DEVELOPMENT: JSON.stringify(process.env.NODE_ENV === 'development'),
+      PRODUCTION: JSON.stringify(process.env.NODE_ENV === 'production'),
+    }),
     new HtmlWebpackPlugin({
       template: './src/stock-chart.html',
     }),
@@ -65,4 +66,4 @@ module.exports = {
     hot: true,
     port: 8080,
   },
-};
+}

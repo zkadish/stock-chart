@@ -60,6 +60,10 @@ class ChartLoop {
     this.xaxis.context.restore();
   }
 
+  /**
+   * Request current price
+   * @param {*} options 
+   */
   currentPrice(options) {
     // console.log('currentPrice');
     this.curPriceInt = setInterval(() => {
@@ -72,6 +76,9 @@ class ChartLoop {
 
   stop() {
     clearInterval(this.curPriceInt);
+    // window.cancelAnimationFrame(this.rafId + 1);
+    // this.chart.UpperVal = null;
+    // this.chart.LowerVal = null;
     this.chartStopped = true;
   }
 
@@ -105,10 +112,13 @@ class ChartLoop {
       this.lastUpdate = now;
     }
 
+    /**
+     * Reset Upper and Lower values
+     */
     if (this.chartStopped) {
       window.cancelAnimationFrame(this.rafId + 1);
-      this.chart.chartUpperVal = null;
-      this.chart.chartLowerVal = null;
+      this.chart.UpperVal = null;
+      this.chart.LowerVal = null;
       return;
     }
 

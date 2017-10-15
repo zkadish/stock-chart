@@ -1,15 +1,16 @@
 import StockChart from './StockChart';
 
 export default class ChartYAxis extends StockChart {
-  // **************************************
-  // RENDER CURRENT PRICE DISPLAY
-  // **************************************
+  /**
+   * RENDER CURRENT PRICE DISPLAY
+   * @param {*} price 
+   */
   CurrentPrice(price) {
-    if (!window.chartUpperVal || !window.chartLowerVal) return;
+    if (!window.UpperVal || !window.LowerVal) return;
     const bgColor = 'red';
     const fgColor = 'white';
     const x = 0;
-    const y = -(this.yAxisPoint(price.current, window.chartUpperVal, window.chartLowerVal));
+    const y = -(this.yAxisPoint(price.current, window.UpperVal, window.LowerVal));
     const width = -(this.canvasWidth);
     const height = 40;
     const midPoint = this.canvasHeight * 0.5;
@@ -45,10 +46,13 @@ export default class ChartYAxis extends StockChart {
     this.context.restore();
   }
 
-  // DISPLAY VALUES >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  // these values relate to 18 and 10 grid lines respectivly
-  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  /**
+   * these values relate to 18 and 10 grid lines respectively
+   * @param {*} high 
+   * @param {*} low 
+   */
   yAxisValues(high, low) {
+    // console.log('yAxisValues', high, low)
     const range = high - low;
     const offset = range / 9; // 9, // 17
     let highStart = 0;
@@ -69,7 +73,7 @@ export default class ChartYAxis extends StockChart {
   }
 
   upperHorizontalLines(n = ((this.canvasHeight / this.hGridLines) / 2) / 1) {
-    if (!window.chartUpperVal || !window.chartLowerVal) return;
+    if (!window.UpperVal || !window.LowerVal) return;
     const color = '#ccc';
     const x = -(this.canvasWidth);
     const width = 15;
@@ -106,17 +110,18 @@ export default class ChartYAxis extends StockChart {
     this.upperHorizontalLines(n + (offset / offsetScale));
   }
 
-  // upperHorizontalLines(n = ((this.canvasHeight / this.hGridLines) / 2) / 1, hVal = this.yAxisValues(window.chartUpperVal, window.chartLowerVal).highStart, i = 0) {
-  upperValues(n = ((this.canvasHeight / this.hGridLines) / 2) / 1, hVal = this.yAxisValues(window.chartUpperVal, window.chartLowerVal).highStart) {
-    if (!window.chartUpperVal || !window.chartLowerVal) return;
-    const color = '#cccccc';
-    const x = -(this.canvasWidth);
-    const width = 15;
-    const height = 2;
+  // upperHorizontalLines(n = ((this.canvasHeight / this.hGridLines) / 2) / 1, hVal = this.yAxisValues(window.UpperVal, window.LowerVal).highStart, i = 0) {
+  upperValues(n = ((this.canvasHeight / this.hGridLines) / 2) / 1, hVal = this.yAxisValues(window.UpperVal, window.LowerVal).highStart) {
+    if (!window.UpperVal || !window.LowerVal) return;
+    // debugger
+    // const color = '#cccccc';
+    // const x = -(this.canvasWidth);
+    // const width = 15;
+    // const height = 2;
     const offset = this.canvasHeight / this.hGridLines;
     let offsetScale = 1;
     const midPoint = this.canvasHeight * 0.5;
-    const yVals = this.yAxisValues(window.chartUpperVal, window.chartLowerVal);
+    const yVals = this.yAxisValues(window.UpperVal, window.LowerVal);
     let highVal = hVal;
     let yValsScale = 1;
 
@@ -165,8 +170,8 @@ export default class ChartYAxis extends StockChart {
     this.upperValues(n + (offset / offsetScale), highVal);
   }
 
-  lowerHorizontalLines(n = ((this.canvasHeight / this.hGridLines) / 2) / 1, lVal = this.yAxisValues(window.chartUpperVal, window.chartLowerVal).lowStart) {
-    if (!window.chartUpperVal || !window.chartLowerVal) return;
+  lowerHorizontalLines(n = ((this.canvasHeight / this.hGridLines) / 2) / 1, lVal = this.yAxisValues(window.UpperVal, window.LowerVal).lowStart) {
+    if (!window.UpperVal || !window.LowerVal) return;
     const color = '#cccccc';
     const x = -(this.canvasWidth);
     const width = 15;
@@ -174,7 +179,7 @@ export default class ChartYAxis extends StockChart {
     const offset = (this.canvasHeight * 0.5) / 5;
     const offsetScale = 1;
     const midPoint = this.canvasHeight * 0.5;
-    const yVals = this.yAxisValues(window.chartUpperVal, window.chartLowerVal);
+    const yVals = this.yAxisValues(window.UpperVal, window.LowerVal);
     let lowerVal = lVal;
     const yValsScale = 1;
 
