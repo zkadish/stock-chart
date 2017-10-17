@@ -5,7 +5,7 @@ import { HORIZONTAL_GRID_LINES } from './constants';
 // make sure your clearing all events
 
 export default class StockChart {
-  constructor(DOM, historicPrice, currentPrice, options) {
+  constructor(DOM) {
     // set up canvas
     this.canvasContainer = DOM;
     this.containerRect = this.canvasContainer.getBoundingClientRect();
