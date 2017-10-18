@@ -5,7 +5,7 @@ export default class ChartYAxis extends StockChart {
    * RENDER CURRENT PRICE DISPLAY
    * @param {*} price 
    */
-  CurrentPrice(price) {
+  CurrentPrice(price) {    
     if (!window.UpperVal || !window.LowerVal) return;
     const bgColor = 'red';
     const fgColor = 'white';
@@ -51,7 +51,7 @@ export default class ChartYAxis extends StockChart {
    * @param {*} high 
    * @param {*} low 
    */
-  yAxisValues(high, low) {
+  yAxisValues = (high, low) => {
     // console.log('yAxisValues', high, low)
     const range = high - low;
     const offset = range / 9; // 9, // 17

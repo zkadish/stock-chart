@@ -7,8 +7,7 @@ import { HORIZONTAL_GRID_LINES } from './constants';
 export default class StockChart {
   constructor(DOM) {
     // set up canvas
-    this.canvasContainer = DOM;
-    this.containerRect = this.canvasContainer.getBoundingClientRect();
+    this.containerRect = DOM.getBoundingClientRect();
     this.canvas = DOM.children[0];
     this.context = this.canvas.getContext('2d');
 
@@ -22,21 +21,14 @@ export default class StockChart {
     this.canvas.style.width = `${this.canvasWidth * 0.5}px`;
     this.canvas.style.height = `${this.canvasHeight * 0.5}px`;
 
-    // yaxis uses these values
-    this.hGridLines = HORIZONTAL_GRID_LINES; // 18
-
-    this.UpperVal = null;
-    this.LowerVal = null;
-
-    this.yPointPos = this.yPointPos.bind(this);
-    this.valueRange = this.valueRange.bind(this);
+    this.hGridLines = HORIZONTAL_GRID_LINES;
 
     document.addEventListener('window:onresize', this.windowOnResizeHandler, false);
   }
 
   // yaxis, xaxis
   windowOnResizeHandler = () => {
-    this.containerRect = this.canvasContainer.getBoundingClientRect();
+    this.containerRect = this.containerRect;
     this.canvasWidth = this.containerRect.width * 2;
     this.canvasHeight = this.containerRect.height * 2;
 
@@ -80,7 +72,7 @@ export default class StockChart {
    * @param {*} upperVal 
    * @param {*} lowerVal 
    */
-  yPointPos(pointVal, upperVal, lowerVal) {
+  yPointPos = (pointVal, upperVal, lowerVal) => {
     // half the height of a grid space, accounts
     // for small buffer on top and bottom of chart
     const cHeight = this.canvasHeight * ((this.hGridLines - 1) / this.hGridLines); // (9/10) (17/18)
@@ -103,31 +95,27 @@ export default class StockChart {
    * @param {*} priceData 
    * @param {*} UpperVal, LowerVal
    */
+
+  UpperVal = null;
+  LowerVal = null;
+
   setUpperRange(priceData) {
-    if (!this.UpperVal) {
+    if (!this.UpperVal || priceData.High > this.UpperVal) {
       this.UpperVal = priceData.High;
       window.UpperVal = priceData.High;      
-    }
-    if (priceData.High > this.UpperVal) {
-      this.UpperVal = priceData.High;
-      window.UpperVal = priceData.High;
     }
   }
 
   setLowerRange(priceData) {
-    if (!this.LowerVal) {
+    if (!this.LowerVal || priceData.Low < this.LowerVal) {
       this.LowerVal = priceData.Low;
       window.LowerVal = priceData.Low;      
     }
-    if (priceData.Low < this.LowerVal) {
-      this.LowerVal = priceData.Low;
-      window.LowerVal = priceData.Low;
-    }
   }
 
-  valueRange(priceData, UpperVal, LowerVal) {
-    this.setUpperRange(priceData, UpperVal);
-    this.setLowerRange(priceData, LowerVal);
+  valueRange(priceData) {
+    this.setUpperRange(priceData);
+    this.setLowerRange(priceData);
   }
 
   /**
@@ -159,12 +147,13 @@ export default class StockChart {
     /**
      * chart high and low values start here...
      */
-    this.valueRange(price.history[i], this.UpperVal, this.LowerVal);
-
+    this.valueRange(price.history[i]);
+    // get values for each bar
+    const barOpenPos = yPos(price.history[i].Open, this.UpperVal, this.LowerVal);
     let barHighPos = yPos(price.history[i].High, this.UpperVal, this.LowerVal);
     let barLowPos = yPos(price.history[i].Low, this.UpperVal, this.LowerVal);
-    const barOpenPos = yPos(price.history[i].Open, this.UpperVal, this.LowerVal);
     let barClosePos = yPos(price.history[i].Close, this.UpperVal, this.LowerVal);
+
     // handle current price updates
     if (i === 0) {
       barClosePos = yPos(price.current, this.UpperVal, this.LowerVal);
@@ -176,10 +165,11 @@ export default class StockChart {
       }
     }
 
+    // create bar with canvas context
     this.context.save();
     this.context.beginPath();
 
-    // TODO: use less transforms
+    // TODO: use less transforms...
     this.context.translate(0, -(this.canvasHeight * 0.5));
     this.context.scale(window.horizontalZoom, window.verticalZoom);
     this.context.translate(0, this.canvasHeight * 0.5);
@@ -251,9 +241,13 @@ export default class StockChart {
     this.MonthYear((n + offset), date, i, price);
   }
 
-  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  // VERTICAL GRID LINES
-  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  /**
+   * VERTICAL GRID LINES
+   * @param {*} n 
+   * @param {*} date 
+   * @param {*} index 
+   * @param {*} price 
+   */
   VerticalLines(n, date, index, price) {
     let i = index;
     const color = '#ccc';
@@ -320,7 +314,6 @@ export default class StockChart {
   // CURRENT PRICE PLACEMENT
   // ***********************************************
   yAxisPoint(pointVal, upperVal, lowerVal) {
-    // console.log('yAxisPoint', pointVal, upperVal, lowerVal);
     const cHeight = this.canvasHeight * 0.9;
     const valRatio = (pointVal - lowerVal) / (upperVal - lowerVal);
     return (cHeight * valRatio) + (this.canvasHeight * 0.05);
@@ -329,7 +322,6 @@ export default class StockChart {
   // CURRENT PRICE LINE
   // ***********************************************  
   CurrentPrice(price) {
-    // debugger;
     // if (this.currentPrice === null) return;
     const color = 'red';
     const x = 0;
