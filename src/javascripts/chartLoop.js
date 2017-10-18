@@ -116,7 +116,8 @@ class ChartLoop {
      * Reset Upper and Lower values
      */
     if (this.chartStopped) {
-      window.cancelAnimationFrame(this.rafId + 1);
+      // window.cancelAnimationFrame(this.rafId + 1);
+      this.price = null;
       this.chart.UpperVal = null;
       this.chart.LowerVal = null;
       return;

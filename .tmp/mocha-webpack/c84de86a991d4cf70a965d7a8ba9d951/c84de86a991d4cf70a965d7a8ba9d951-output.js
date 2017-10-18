@@ -120,21 +120,74 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var stockChartDOM = document.querySelector('.stockchart-container');
 var stockChart = new _StockChart2.default(stockChartDOM);
-// stockChart.canvasHeight = 100;
-// stockChart.hGridLines = 10;
 
-describe('The yPointPos function', function () {
-  before(function () {
-    stockChart.canvasHeight = 100;
-    stockChart.hGridLines = 10;
+describe('The StockChart Class', function () {
+
+  describe('The setUpperRange method', function () {
+    before(function () {
+      stockChart.UpperVal = null;
+    });
+    it('will set this.UpperVal to priceData.High if stockChart.UpperVal is null', function () {
+      var priceData = { High: 9 };
+      // const { UpperVal } = stockChart;
+      stockChart.setUpperRange(priceData);
+      (0, _chai.expect)(stockChart.UpperVal).to.equal(9);
+      (0, _chai.expect)(window.UpperVal).to.equal(9);
+    });
   });
 
-  it('returns a position', function () {
-    var pointVal = 5;
-    var upperVal = 10;
-    var lowerVal = 0;
-    var yPos = stockChart.yPointPos(pointVal, upperVal, lowerVal);
-    (0, _chai.expect)(yPos).to.equal(50);
+  describe('The setUpperRange method', function () {
+    before(function () {
+      stockChart.UpperVal = 8;
+    });
+    it('will set this.UpperVal to priceData.High if stockChart.UpperVal is less then priceData.High', function () {
+      var priceData = { High: 9 };
+      // const { UpperVal } = stockChart;
+      stockChart.setUpperRange(priceData);
+      (0, _chai.expect)(stockChart.UpperVal).to.equal(9);
+      (0, _chai.expect)(window.UpperVal).to.equal(9);
+    });
+  });
+
+  describe('The setLowerRange method', function () {
+    before(function () {
+      stockChart.LowerVal = null;
+    });
+    it('will set this.LowerVal to priceData.Low if stockChart.LowerVal is null', function () {
+      var priceData = { Low: 1 };
+      // const { LowerVal } = stockChart;
+      stockChart.setLowerRange(priceData);
+      (0, _chai.expect)(stockChart.LowerVal).to.equal(1);
+      (0, _chai.expect)(window.LowerVal).to.equal(1);
+    });
+  });
+
+  describe('The setLowerRange method', function () {
+    before(function () {
+      stockChart.LowerVal = 2;
+    });
+    it('will set this.LowerVal to priceData.Low if stockChart.LowerVal is less then priceData.Low', function () {
+      var priceData = { Low: 1 };
+      // const { LowerVal } = stockChart;
+      stockChart.setLowerRange(priceData);
+      (0, _chai.expect)(stockChart.LowerVal).to.equal(1);
+      (0, _chai.expect)(window.LowerVal).to.equal(1);
+    });
+  });
+
+  describe('The yPointPos method should return 50 if canvasHeight is set to 100', function () {
+    before(function () {
+      stockChart.canvasHeight = 100;
+      stockChart.hGridLines = 10;
+    });
+
+    it('returns a position', function () {
+      var pointVal = 5;
+      var upperVal = 10;
+      var lowerVal = 0;
+      var yPos = stockChart.yPointPos(pointVal, upperVal, lowerVal);
+      (0, _chai.expect)(yPos).to.equal(50);
+    });
   });
 });
 
@@ -314,10 +367,9 @@ var StockChart = function () {
      * @param {*} lowerVal 
      */
     value: function yPointPos(pointVal, upperVal, lowerVal) {
-      console.log(pointVal, upperVal, lowerVal
       // half the height of a grid space, accounts
       // for small buffer on top and bottom of chart
-      );var cHeight = this.canvasHeight * ((this.hGridLines - 1) / this.hGridLines); // (9/10) (17/18)
+      var cHeight = this.canvasHeight * ((this.hGridLines - 1) / this.hGridLines); // (9/10) (17/18)
       // use lowerVal to account for canvas (0,0) being at the bottom right
       // ÷ by the difference of upperVal and lowerVal to find where the point is verticaly
       // based on percentage.
