@@ -5,8 +5,8 @@ export default class ChartYAxis extends StockChart {
    * RENDER CURRENT PRICE DISPLAY
    * @param {*} price 
    */
-  CurrentPrice(price) {    
-    if (!window.UpperVal || !window.LowerVal) return;
+  CurrentPrice(price) {
+    if (!price || !window.UpperVal || !window.LowerVal) return;
     const bgColor = 'red';
     const fgColor = 'white';
     const x = 0;
@@ -113,6 +113,8 @@ export default class ChartYAxis extends StockChart {
   // upperHorizontalLines(n = ((this.canvasHeight / this.hGridLines) / 2) / 1, hVal = this.yAxisValues(window.UpperVal, window.LowerVal).highStart, i = 0) {
   upperValues(n = ((this.canvasHeight / this.hGridLines) / 2) / 1, hVal = this.yAxisValues(window.UpperVal, window.LowerVal).highStart) {
     if (!window.UpperVal || !window.LowerVal) return;
+    // window.UpperVal = 0;
+    // console.log(window.UpperVal)
     // debugger
     // const color = '#cccccc';
     // const x = -(this.canvasWidth);

@@ -4,15 +4,10 @@ window.horizontalZoom = 1;
 // let isScaling = false;
 
 export default function HorizontalZoom() {
-  const xaxisContainer = document.querySelector('.xaxis-canvas');
-  let mouseDown = false;
+  const xAxisContainer = document.querySelector('.xaxis-canvas');
   let mousePos = null;
 
-  xaxisContainer.onmousemove = function (e) {
-    if (!mouseDown) {
-      return;
-    }
-
+  function mousemoveHandler(e) {
     if (mousePos) {
       if (mousePos.x > e.clientX) {
         window.horizontalZoom += 0.01;
@@ -22,17 +17,18 @@ export default function HorizontalZoom() {
       }
     }
 
+    mousePos.x = e.clientX;
+  }
+
+  function mouseupHandler() {
+    document.removeEventListener('mousemove', mousemoveHandler);
+    document.removeEventListener('mouseup', mouseupHandler);
+  }
+
+  xAxisContainer.onmousedown = function mousedownHandler(e) {
     mousePos = {};
     mousePos.x = e.clientX;
-  };
-
-  xaxisContainer.onmousedown = function () {
-    mouseDown = true;
-    // isScaling = true;
-  };
-
-  xaxisContainer.onmouseup = function () {
-    mouseDown = false;
-    // isScaling = false;
+    document.addEventListener('mousemove', mousemoveHandler, false);
+    document.addEventListener('mouseup', mouseupHandler, false);
   };
 }

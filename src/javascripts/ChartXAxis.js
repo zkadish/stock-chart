@@ -6,6 +6,7 @@ export default class ChartXAxis extends StockChart {
   // TODO make vLines and day into seperate methods
   // *****************************************************
   verticalLines(n, date, index, price) {
+    if (!price) return;
     let i = index;
     const color = '#ccc';
     const width = 2;

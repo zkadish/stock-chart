@@ -1,41 +1,34 @@
 window.verticalZoom = 1;
-let scaleDirection = 'down';
-let scaling = true;
 
 export default function verticalZoom() {
-  const yaxisContainer = document.querySelector('.yaxis-canvas');
-  let mouseDown = false;
+  const yAxisContainer = document.querySelector('.yaxis-canvas');
   let mousePos = null;
 
-  yaxisContainer.onmousemove = (e) => {
-    if (!mouseDown) return;
+  function mousemoveHandler(e) {
     if (window.verticalZoom <= 0.05) {
       window.verticalZoom = 0.06;
       return;
     }
 
-    if (mousePos) {
-      if (mousePos.y > e.clientY) {
-        window.verticalZoom += 0.04;
-        scaleDirection = 'up';
-      }
-      if (mousePos.y < e.clientY) {
-        window.verticalZoom -= 0.04;
-        scaleDirection = 'down';
-      }
+    if (mousePos.y > e.clientY) {
+      window.verticalZoom += 0.04;
+    }
+    if (mousePos.y < e.clientY) {
+      window.verticalZoom -= 0.04;
     }
 
+    mousePos.y = e.clientY;
+  }
+
+  function mouseupHandler() {
+    document.removeEventListener('mousemove', mousemoveHandler);
+    document.removeEventListener('mouseup', mouseupHandler);
+  }
+
+  yAxisContainer.onmousedown = function mousedownHandler(e) {
     mousePos = {};
     mousePos.y = e.clientY;
-  };
-
-  yaxisContainer.onmousedown = () => {
-    mouseDown = true;
-    scaling = true;
-  };
-
-  yaxisContainer.onmouseup = () => {
-    mouseDown = false;
-    scaling = false;
+    document.addEventListener('mousemove', mousemoveHandler, false);
+    document.addEventListener('mouseup', mouseupHandler, false);
   };
 }

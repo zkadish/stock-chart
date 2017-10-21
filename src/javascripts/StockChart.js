@@ -95,9 +95,11 @@ export default class StockChart {
    * @param {*} priceData 
    * @param {*} UpperVal, LowerVal
    */
-
+  
   UpperVal = null;
   LowerVal = null;
+  numOfBars = null;
+  
 
   setUpperRange(priceData) {
     if (!this.UpperVal || priceData.High > this.UpperVal) {
@@ -113,10 +115,34 @@ export default class StockChart {
     }
   }
 
-  valueRange(priceData) {
-    this.setUpperRange(priceData);
-    this.setLowerRange(priceData);
+  // valueRange(priceData) {
+  //   this.setUpperRange(priceData);
+  //   this.setLowerRange(priceData);
+  // }
+
+  // TODO: get number of displayed bars and use to limit upper and lower range values...
+  valueRangeLoop(index, price) {
+    if (!price) {
+      this.UpperVal = null;
+      this.LowerVal = null;
+      window.UpperVal = 0;
+      window.LowerVal = 0;
+      return;
+    }
+    let i = index;
+    // if (i >= price.history.length) {
+    if (i >= this.numOfBars) {
+      i = 0;
+      return;
+    }
+
+    this.setUpperRange(price.history[i]);
+    this.setLowerRange(price.history[i]);
+
+    i += 1;
+    this.valueRangeLoop(i, price)
   }
+
 
   /**
    * Draw Bars into the Main Chart
@@ -127,6 +153,7 @@ export default class StockChart {
    * @param {*} price 
    */
   BarData(n, yPos, vRange, index, price) {
+    if (!price) return;
     let i = index;
     const color = 'black';
     const width = 6;
@@ -147,7 +174,8 @@ export default class StockChart {
     /**
      * chart high and low values start here...
      */
-    this.valueRange(price.history[i]);
+    // this.valueRange(price.history[i]);
+
     // get values for each bar
     const barOpenPos = yPos(price.history[i].Open, this.UpperVal, this.LowerVal);
     let barHighPos = yPos(price.history[i].High, this.UpperVal, this.LowerVal);
@@ -211,6 +239,7 @@ export default class StockChart {
   }
 
   MonthYear(n, date, index, price) {
+    if (!price) return;
     let i = index;
     const color = '#000';
     const buffer = 30;
@@ -241,6 +270,21 @@ export default class StockChart {
     this.MonthYear((n + offset), date, i, price);
   }
 
+  barCount(n, index) {
+    let i = index;
+    const buffer = 30;
+    const offset = 40;
+    if ((n + buffer) > this.canvasWidth) {
+      i = 0;
+      return;
+    }
+    
+    // console.log('barCount', i)
+    this.numOfBars = i;
+
+    i += 1;
+    this.barCount((n + offset), i);
+  }
   /**
    * VERTICAL GRID LINES
    * @param {*} n 
@@ -249,6 +293,7 @@ export default class StockChart {
    * @param {*} price 
    */
   VerticalLines(n, date, index, price) {
+    if (!price) return;
     let i = index;
     const color = '#ccc';
     const y = 0;
@@ -322,7 +367,7 @@ export default class StockChart {
   // CURRENT PRICE LINE
   // ***********************************************  
   CurrentPrice(price) {
-    // if (this.currentPrice === null) return;
+    if (!price) return;
     const color = 'red';
     const x = 0;
     // *****************************************

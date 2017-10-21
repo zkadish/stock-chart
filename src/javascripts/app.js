@@ -5,7 +5,7 @@ import ChartXAxis from 'src/javascripts/ChartXAxis';
 import Options from 'src/javascripts/chartOptions';
 import HorizontalZoom from 'src/javascripts/horizontalZoom';
 import VerticalZoom from 'src/javascripts/verticalZoom';
-import HorzVertPanning from 'src/javascripts/horzVertPanning';
+import panChart from 'src/javascripts/panChart';
 import * as request from 'src/javascripts/requests';
 
 import 'src/stylesheets/style.scss';
@@ -17,7 +17,7 @@ class Chart {
     this.stockChartDOM = document.querySelector('.stockchart-container');
     this.yaxisDOM = document.querySelector('.yaxis-container');
     this.xaxisDOM = document.querySelector('.xaxis-container');
-    const canvasContainer = document.querySelector('.canvas-container');
+    // const canvasContainer = document.querySelector('.canvas-container');
 
     // const resizeContainer = document.querySelector('.resize-container');
     // const containerRect = canvasContainer.getBoundingClientRect();
@@ -25,57 +25,62 @@ class Chart {
     // resizeContainer.style.height = `${containerRect.height}px`;
 
     // set up on window resize event
-    // function windowOnResizeHandler() {
-    //   // containerRect = canvasContainer.getBoundingClientRect();
-    //   // resizeContainer.style.width = `${containerRect.width}px`;
-    //   // resizeContainer.style.height = `${containerRect.height}px`;
-    // }
-    // document.addEventListener('window:onresize', null, false);
     const windowOnResize = new CustomEvent('window:onresize');
     window.onresize = () => {
       document.dispatchEvent(windowOnResize);
     };
 
-    // initialize chart mouse evetns
+    // initialize chart mouse events
+    // TODO: add document mouse up to remove mouse events...
     HorizontalZoom();
     VerticalZoom();
-    HorzVertPanning();
+    panChart();
 
     this.options = Options;
     // this.stockChart = null;
-    this.loop = null;
+    this.stockChart = null;
+    this.chartYAxis = null;
+    this.chartXAxis = null;
+    this.chartLoop = null;
   }
 
+  init() {
+    // this.options = options;
+    this.stockChart = new StockChart(this.stockChartDOM);
+    this.chartYAxis = new ChartYAxis(this.yaxisDOM);
+    this.chartXAxis = new ChartXAxis(this.xaxisDOM);
+    this.chartLoop = new ChartLoop(this.stockChart, this.chartYAxis, this.chartXAxis);
+    this.onStart();
+  }
+
+  // TODO: create a onLoad() data method and separate it from onState()
   onStart(options) {
     this.options = options || this.options;
     Promise.all([
       request.current(this.options),
       request.history(this.options),
     ]).then((data) => {
-      this.loop.start();
-      this.loop.currentPrice(this.options);
-      this.loop.loop(null, { current: data[0], history: data[1] });
+      // setTimeout(() => {
+        // this.chartLoop.start();
+        this.chartLoop.currentPrice(this.options);
+        this.chartLoop.loop(null, { current: data[0], history: data[1] });
+      // }, 0);
     });
   }
 
   onStop() {
+    this.stockChart.UpperVal = null;
+    this.stockChart.LowerVal = null;
     // cancel animation frame loop, clear current price
     // interval, reset upper and lower range values
-    this.loop.stop();
+    this.chartLoop.cancelCurPrice();
   }
 
   update(options) {
-    this.onStart(options);
     this.onStop();
-  }
-
-  init() {
-    // this.options = options;
-    const stockChart = new StockChart(this.stockChartDOM);
-    const chartYAxis = new ChartYAxis(this.yaxisDOM);
-    const chartXAxis = new ChartXAxis(this.xaxisDOM);
-    this.loop = new ChartLoop(stockChart, chartYAxis, chartXAxis);
-    this.onStart();
+    // setTimeout(() => {
+      this.onStart(options);
+    // }, 0);
   }
 }
 

@@ -35,6 +35,9 @@ class ChartLoop {
     this.chart.MonthYear(0, this.chart.processDate, 0, price);
     this.chart.ChartBorder();
     this.chart.context.restore();
+    
+    this.chart.barCount(0, 0);
+    this.chart.valueRangeLoop(0, price);
 
     // yAxisChart
     this.yaxis.context.translate(this.yaxis.canvasWidth, this.yaxis.canvasHeight);
@@ -62,7 +65,7 @@ class ChartLoop {
 
   /**
    * Request current price
-   * @param {*} options 
+   * @param {*} options
    */
   currentPrice(options) {
     // console.log('currentPrice');
@@ -74,17 +77,15 @@ class ChartLoop {
     }, 10000);
   }
 
-  stop() {
+  cancelCurPrice() {
     clearInterval(this.curPriceInt);
-    // window.cancelAnimationFrame(this.rafId + 1);
-    // this.chart.UpperVal = null;
-    // this.chart.LowerVal = null;
-    this.chartStopped = true;
+    this.price = null;
+    // this.chartStopped = true;
   }
 
-  start() {
-    this.chartStopped = false;
-  }
+  // start() {
+  //   this.chartStopped = false;
+  // }
 
   // This fuction uses request animaiton frame to create
   // a render loop for all drawn elements in the canvas.
@@ -115,13 +116,13 @@ class ChartLoop {
     /**
      * Reset Upper and Lower values
      */
-    if (this.chartStopped) {
-      // window.cancelAnimationFrame(this.rafId + 1);
-      this.price = null;
-      this.chart.UpperVal = null;
-      this.chart.LowerVal = null;
-      return;
-    }
+    // if (this.chartStopped) {
+    //   // window.cancelAnimationFrame(this.rafId + 1);
+    //   this.price = null;
+    //   // this.chart.UpperVal = null;
+    //   // this.chart.LowerVal = null;
+    //   // return;
+    // }
 
     // loopCount += 1;
     this.rafId = window.requestAnimationFrame(this.loop);
