@@ -68,7 +68,6 @@ class ChartLoop {
    * @param {*} options
    */
   currentPrice(options) {
-    // console.log('currentPrice');
     this.curPriceInt = setInterval(() => {
       request.current(options).then((price) => {
         console.log('currentPrice:', options.coin, options.currency, price);
@@ -80,12 +79,7 @@ class ChartLoop {
   cancelCurPrice() {
     clearInterval(this.curPriceInt);
     this.price = null;
-    // this.chartStopped = true;
   }
-
-  // start() {
-  //   this.chartStopped = false;
-  // }
 
   // This fuction uses request animaiton frame to create
   // a render loop for all drawn elements in the canvas.
@@ -112,17 +106,6 @@ class ChartLoop {
     } else {
       this.lastUpdate = now;
     }
-
-    /**
-     * Reset Upper and Lower values
-     */
-    // if (this.chartStopped) {
-    //   // window.cancelAnimationFrame(this.rafId + 1);
-    //   this.price = null;
-    //   // this.chart.UpperVal = null;
-    //   // this.chart.LowerVal = null;
-    //   // return;
-    // }
 
     // loopCount += 1;
     this.rafId = window.requestAnimationFrame(this.loop);

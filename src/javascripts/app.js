@@ -3,9 +3,8 @@ import StockChart from 'src/javascripts/StockChart';
 import ChartYAxis from 'src/javascripts/ChartYAxis';
 import ChartXAxis from 'src/javascripts/ChartXAxis';
 import Options from 'src/javascripts/chartOptions';
-import HorizontalZoom from 'src/javascripts/horizontalZoom';
-import VerticalZoom from 'src/javascripts/verticalZoom';
 import panChart from 'src/javascripts/panChart';
+import * as scaleChart from 'src/javascripts/scaleChart';
 import * as request from 'src/javascripts/requests';
 
 import 'src/stylesheets/style.scss';
@@ -17,12 +16,6 @@ class Chart {
     this.stockChartDOM = document.querySelector('.stockchart-container');
     this.yaxisDOM = document.querySelector('.yaxis-container');
     this.xaxisDOM = document.querySelector('.xaxis-container');
-    // const canvasContainer = document.querySelector('.canvas-container');
-
-    // const resizeContainer = document.querySelector('.resize-container');
-    // const containerRect = canvasContainer.getBoundingClientRect();
-    // resizeContainer.style.width = `${containerRect.width}px`;
-    // resizeContainer.style.height = `${containerRect.height}px`;
 
     // set up on window resize event
     const windowOnResize = new CustomEvent('window:onresize');
@@ -31,13 +24,11 @@ class Chart {
     };
 
     // initialize chart mouse events
-    // TODO: add document mouse up to remove mouse events...
-    HorizontalZoom();
-    VerticalZoom();
+    scaleChart.horizontalZoom();
+    scaleChart.verticalZoom();
     panChart();
 
     this.options = Options;
-    // this.stockChart = null;
     this.stockChart = null;
     this.chartYAxis = null;
     this.chartXAxis = null;
@@ -60,27 +51,21 @@ class Chart {
       request.current(this.options),
       request.history(this.options),
     ]).then((data) => {
-      // setTimeout(() => {
-        // this.chartLoop.start();
-        this.chartLoop.currentPrice(this.options);
-        this.chartLoop.loop(null, { current: data[0], history: data[1] });
-      // }, 0);
+      this.chartLoop.currentPrice(this.options);
+      this.chartLoop.loop(null, { current: data[0], history: data[1] });
     });
   }
 
   onStop() {
     this.stockChart.UpperVal = null;
     this.stockChart.LowerVal = null;
-    // cancel animation frame loop, clear current price
-    // interval, reset upper and lower range values
+    // clear current frame interval and reset current price
     this.chartLoop.cancelCurPrice();
   }
 
   update(options) {
     this.onStop();
-    // setTimeout(() => {
-      this.onStart(options);
-    // }, 0);
+    this.onStart(options);
   }
 }
 

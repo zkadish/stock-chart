@@ -1,7 +1,7 @@
 window.horizontalPan = 0;
 window.verticalPan = 0;
 // TODO: check to see if window.panning is being used
-window.panning = false;
+// window.panning = false;
 
 let panLeft = 0;
 let panRight = 0;
@@ -14,7 +14,7 @@ export default function panChart() {
 
   // Account for canvas dimensions being multiplied by 2
   function mousemoveHandler(e) {
-    window.panning = true;
+    // window.panning = true;
     if (mousePos.x > e.clientX) {
       panLeft = ((mousePos.x - e.clientX) * 2) / window.horizontalZoom;
       window.horizontalPan -= panLeft;
@@ -42,8 +42,8 @@ export default function panChart() {
   function mouseupHandler() {
     document.removeEventListener('mousemove', mousemoveHandler);
     document.removeEventListener('mouseup', mouseupHandler);
-    window.panning = false;
-    mousePos = null;
+    // window.panning = false;
+    // mousePos = null;
   }
 
   chartCanvas.onmousedown = function onmousedownHandler(e) {

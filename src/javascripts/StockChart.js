@@ -1,5 +1,5 @@
 // import moment from 'moment';
-import { HORIZONTAL_GRID_LINES } from './constants';
+import * as C from './constants';
 
 // TODO: Fix pan and zoom events so they release on document.mouseup and
 // make sure your clearing all events
@@ -21,10 +21,16 @@ export default class StockChart {
     this.canvas.style.width = `${this.canvasWidth * 0.5}px`;
     this.canvas.style.height = `${this.canvasHeight * 0.5}px`;
 
-    this.hGridLines = HORIZONTAL_GRID_LINES;
+    this.hGridLines = C.HORIZONTAL_GRID_LINES;
+    this.vLineBuffer = C.VERTICAL_LINE_BUFFER;
+    this.vLineOffset = C.VERTICAL_LINE_OFFSET;
 
     document.addEventListener('window:onresize', this.windowOnResizeHandler, false);
   }
+
+  UpperVal = null;
+  LowerVal = null;
+  numOfBars = null;
 
   // yaxis, xaxis
   windowOnResizeHandler = () => {
@@ -39,6 +45,22 @@ export default class StockChart {
     this.canvas.style.height = `${this.canvasHeight * 0.5}px`;
   }
 
+  barCount(n, index) {
+    let i = index;
+    const buffer = this.vLineBuffer;
+    const offset = this.vLineOffset;
+    if ((n + buffer) > this.canvasWidth) {
+      i = 0;
+      return;
+    }
+    
+    this.numOfBars = i;
+
+    i += 1;
+    this.barCount((n + offset), i);
+  }
+
+  // TODO: round off yAxis values...
   // roundOffVals(upperVal, lowerVal) {
   //   debugger;
   //   let range = Math.ceil(upperVal) - Math.floor(lowerVal);
@@ -95,11 +117,6 @@ export default class StockChart {
    * @param {*} priceData 
    * @param {*} UpperVal, LowerVal
    */
-  
-  UpperVal = null;
-  LowerVal = null;
-  numOfBars = null;
-  
 
   setUpperRange(priceData) {
     if (!this.UpperVal || priceData.High > this.UpperVal) {
@@ -115,20 +132,9 @@ export default class StockChart {
     }
   }
 
-  // valueRange(priceData) {
-  //   this.setUpperRange(priceData);
-  //   this.setLowerRange(priceData);
-  // }
-
-  // TODO: get number of displayed bars and use to limit upper and lower range values...
   valueRangeLoop(index, price) {
-    if (!price) {
-      this.UpperVal = null;
-      this.LowerVal = null;
-      window.UpperVal = 0;
-      window.LowerVal = 0;
-      return;
-    }
+    if (!price) return;
+
     let i = index;
     // if (i >= price.history.length) {
     if (i >= this.numOfBars) {
@@ -143,7 +149,6 @@ export default class StockChart {
     this.valueRangeLoop(i, price)
   }
 
-
   /**
    * Draw Bars into the Main Chart
    * @param {*} n 
@@ -157,8 +162,8 @@ export default class StockChart {
     let i = index;
     const color = 'black';
     const width = 6;
-    const buffer = 30;
-    const offset = 40;
+    const buffer = this.vLineBuffer;
+    const offset = this.vLineOffset;
 
     if (i >= price.history.length) {
       i = 0;
@@ -170,11 +175,6 @@ export default class StockChart {
       // this.roundOffVals(this.UpperVal, this.LowerVal);
       return;
     }
-    
-    /**
-     * chart high and low values start here...
-     */
-    // this.valueRange(price.history[i]);
 
     // get values for each bar
     const barOpenPos = yPos(price.history[i].Open, this.UpperVal, this.LowerVal);
@@ -270,21 +270,6 @@ export default class StockChart {
     this.MonthYear((n + offset), date, i, price);
   }
 
-  barCount(n, index) {
-    let i = index;
-    const buffer = 30;
-    const offset = 40;
-    if ((n + buffer) > this.canvasWidth) {
-      i = 0;
-      return;
-    }
-    
-    // console.log('barCount', i)
-    this.numOfBars = i;
-
-    i += 1;
-    this.barCount((n + offset), i);
-  }
   /**
    * VERTICAL GRID LINES
    * @param {*} n 
@@ -407,7 +392,6 @@ export default class StockChart {
     const midPoint = this.canvasHeight * 0.5;
 
     if (n * window.verticalZoom > (this.canvasHeight * 0.5) + (window.verticalPan * window.verticalZoom)) {
-      // console.log(window.verticalZoom);
       if (window.verticalZoom <= 0.5) {
         offsetScale = 0.5;
       }

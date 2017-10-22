@@ -1,26 +1,15 @@
-import 'src/stylesheets/page.scss';
-
 import Chart from 'src/javascripts/app';
+
+import 'src/stylesheets/page.scss';
 
 const provider = document.querySelector('.current-price-provider');
 const coin = document.querySelector('.coin-type');
 const currency = document.querySelector('.currency-type');
 
-// console.log(Chart);
-// const interval = setInterval(() => {
-//   console.log(Chart);
-//   if (Chart) {
-//     clearInterval(interval);
-//   }
-// }, 100);
-
-// debugger;
-
 const chart = new Chart();
 chart.init();
 // get a copy of the options for passing into loadChart()
 const options = { ...chart.options };
-
 
 chart.options.list.coins.forEach((c) => {
   const optElement = document.createElement('option');
