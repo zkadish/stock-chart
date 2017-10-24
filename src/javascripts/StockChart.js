@@ -7,7 +7,8 @@ import * as C from './constants';
 export default class StockChart {
   constructor(DOM) {
     // set up canvas
-    this.containerRect = DOM.getBoundingClientRect();
+    this.DOM = DOM;
+    this.containerRect = this.DOM.getBoundingClientRect();
     this.canvas = DOM.children[0];
     this.context = this.canvas.getContext('2d');
 
@@ -34,8 +35,7 @@ export default class StockChart {
 
   // yaxis, xaxis
   windowOnResizeHandler = () => {
-    console.log('window:onresize')
-    this.containerRect = this.containerRect;
+    this.containerRect = this.DOM.getBoundingClientRect();
     this.canvasWidth = this.containerRect.width * 2;
     this.canvasHeight = this.containerRect.height * 2;
 

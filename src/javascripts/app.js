@@ -21,7 +21,6 @@ class Chart {
     // set up on window resize event
     const windowOnResize = new CustomEvent('window:onresize');
     window.onresize = () => {
-      console.log('onresize');
       document.dispatchEvent(windowOnResize);
     };
 
