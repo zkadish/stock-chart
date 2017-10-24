@@ -34,6 +34,7 @@ export default class StockChart {
 
   // yaxis, xaxis
   windowOnResizeHandler = () => {
+    console.log('window:onresize')
     this.containerRect = this.containerRect;
     this.canvasWidth = this.containerRect.width * 2;
     this.canvasHeight = this.containerRect.height * 2;

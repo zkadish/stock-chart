@@ -9,6 +9,7 @@ import * as request from 'src/javascripts/requests';
 
 import 'src/stylesheets/style.scss';
 
+// TODO: rename this file to Chart.js...
 class Chart {
   constructor() {
     // DOM set up
@@ -20,6 +21,7 @@ class Chart {
     // set up on window resize event
     const windowOnResize = new CustomEvent('window:onresize');
     window.onresize = () => {
+      console.log('onresize');
       document.dispatchEvent(windowOnResize);
     };
 
