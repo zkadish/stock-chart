@@ -27,6 +27,7 @@ class ChartLoop {
     // chart.context.fill();
 
     this.chart.context.save();
+    // this.chart.HorizontalMidPoint();
     this.chart.VerticalLines(0, this.chart.processDate, 0, price);
     this.chart.upperHorizontalLines();
     this.chart.lowerHorizontalLines();
@@ -35,7 +36,7 @@ class ChartLoop {
     this.chart.MonthYear(0, this.chart.processDate, 0, price);
     this.chart.ChartBorder();
     this.chart.context.restore();
-    
+
     this.chart.barCount(0, 0);
     this.chart.valueRangeLoop(0, price);
 
@@ -49,6 +50,7 @@ class ChartLoop {
     this.yaxis.upperHorizontalLines();
     this.yaxis.lowerHorizontalLines();
     this.yaxis.upperValues();
+    this.yaxis.lowerValues();
     this.yaxis.CurrentPrice(price);
     this.yaxis.context.restore();
 
@@ -70,7 +72,7 @@ class ChartLoop {
   currentPrice(options) {
     this.curPriceInt = setInterval(() => {
       request.current(options).then((price) => {
-        console.log('currentPrice:', options.coin, options.currency, price);
+        // console.log('currentPrice:', options.coin, options.currency, price);
         this.price = { ...this.price, current: price };
       });
     }, 10000);

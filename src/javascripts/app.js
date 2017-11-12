@@ -1,4 +1,4 @@
-import ChartLoop from 'src/javascripts/chartLoop';
+import ChartLoop from 'src/javascripts/ChartLoop';
 import StockChart from 'src/javascripts/StockChart';
 import ChartYAxis from 'src/javascripts/ChartYAxis';
 import ChartXAxis from 'src/javascripts/ChartXAxis';
