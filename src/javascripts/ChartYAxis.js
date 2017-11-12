@@ -8,9 +8,10 @@ export default class ChartYAxis extends StockChart {
   CurrentPrice(price) {
     if (!price || !window.UpperVal || !window.LowerVal) return;
     const bgColor = 'red';
+    // const bgColor = 'rgba(255, 0, 255, .5)';
     const fgColor = 'white';
     const x = 0;
-    const y = -(this.yAxisPoint(price.current, window.UpperVal, window.LowerVal));
+    const y = -(this.yAxisPoint(price.current, window.gridUpperVal, window.gridLowerVal));
     const width = -(this.canvasWidth);
     const height = 40;
     const midPoint = this.canvasHeight * 0.5;
@@ -18,18 +19,49 @@ export default class ChartYAxis extends StockChart {
     this.context.save();
     this.context.beginPath();
 
-    this.context.transform(1, 0, 0, window.verticalZoom, 0, -(this.canvasHeight * 0.5));
+    // this.context.transform(1, 0, 0, window.verticalZoom, 0, -(this.canvasHeight * 0.5));
+    this.context.transform(1, 0, 0, window.verticalBarZoom, 0, -(this.canvasHeight * 0.5));
     this.context.transform(1, 0, 0, 1, 0, (this.canvasHeight * 0.5) - (window.verticalPan));
 
     this.context.beginPath();
     this.context.fillStyle = bgColor;
+
+    // this.context.fillRect(
+    //   x,
+    //   (y + (window.verticalPan * 2)) - (20 / window.verticalZoom),
+    //   width,
+    //   height / (window.verticalZoom),
+    // );
+
+    this.context.fillRect(
+      this.canvasWidth / 2,
+      (y + (window.verticalPan * 2)) - (20 / window.verticalBarZoom),
+      width,
+      height / (window.verticalBarZoom),
+    );
+
     this.context.fillRect(
       x,
-      (y + (window.verticalPan * 2)) - (20 / window.verticalZoom),
+      y + (window.verticalPan + window.verticalPan),
       width,
-      height / (window.verticalZoom),
+      2 / (window.verticalBarZoom),
     );
+
     this.context.restore();
+
+    // this.context.save();
+    // this.context.beginPath();
+    // this.context.translate(0, -(this.canvasHeight * 0.5));
+
+    // this.context.font = 'normal 20px Arial';
+    // this.context.textBaseline = 'middle';
+    // this.context.fillStyle = fgColor;
+    // this.context.fillText(
+    //   (price.current).toFixed(2),
+    //   width + 20,
+    //   ((y + window.verticalPan) * window.verticalZoom) + (midPoint * window.verticalZoom),
+    // );
+    // this.context.restore();
 
     this.context.save();
     this.context.beginPath();
@@ -40,8 +72,8 @@ export default class ChartYAxis extends StockChart {
     this.context.fillStyle = fgColor;
     this.context.fillText(
       (price.current).toFixed(2),
-      width + 20,
-      ((y + window.verticalPan) * window.verticalZoom) + (midPoint * window.verticalZoom),
+      -(this.canvasWidth / 2) + 20,
+      ((y + window.verticalPan) * window.verticalBarZoom) + (midPoint * window.verticalBarZoom),
     );
     this.context.restore();
   }
@@ -51,44 +83,174 @@ export default class ChartYAxis extends StockChart {
    * @param {*} high 
    * @param {*} low 
    */
-  yAxisValues = (high, low) => {
-    // console.log('yAxisValues', high, low)
-    const range = high - low;
-    const offset = range / 9; // 9, // 17
-    let highStart = 0;
-    let lowStart = 0;
-    if (window.verticalZoom <= 0.5) {
-      highStart = (5 * offset) + (offset * 0.5) + low; // 5 // 9
-      lowStart = (4 * offset) + low; // 4 // 8
-    }
-    if (window.verticalZoom > 0.5) {
-      highStart = (5 * offset) + low; // 5 // 9
-      lowStart = (4 * offset) + low; // 4 // 8
-    }
-    return {
-      highStart,
-      lowStart,
-      offset,
+  high = null;
+  low = null;
+  rnage = null;
+  offset = null;
+  highStart = null;
+  lowStart = null;
+  yAxisValues = (upperVal, lowerVal) => {
+    // if (window.vZoomFactor === 0) {
+      this.high = upperVal;
+      this.low = lowerVal;
+      this.range = this.high - this.low;
+      this.offset = this.range / 9;
+      this.highStart = this.high - (4 * this.offset);
+      this.lowStart = (4 * this.offset) + this.low;
+    // }
+    
+    // if (window.vZoomFactor >= 1) {
+    // if (window.verticalZoom <= 0.8) {
+    //   this.high = this.high + this.offset;
+    //   this.low = this.low - this.offset;
+    //   this.range = this.high - this.low;
+    //   this.offset = this.range / 9;
+    //   this.highStart = (5 * (this.offset)) + this.low;
+    //   this.lowStart = (4 * (this.offset)) + this.low;
+    //   window.verticalZoom = 1;
+    //   // debugger
+    // }
+
+    // if (window.verticalZoom <= 0.62) {
+    //   // this.hGridLines = 6;
+    //   high += offset;
+    //   low -= offset;
+    //   // console.log(high, low)
+    //   range = high - low;
+    //   offset = range / 9;
+    //   highStart = (5 * offset) + low;
+    //   lowStart = (4 * offset) + low;
+    // }
+
+    // if (window.verticalZoom <= 0.4) {
+    //   // this.hGridLines = 4;
+    //   high += offset;
+    //   low -= offset;
+    //   // console.log(high, low)
+    //   range = high - low;
+    //   offset = range / 9;
+    //   highStart = (5 * offset) + low;
+    //   lowStart = (4 * offset) + low;
+    // }
+
+    // if (window.verticalZoom <= 0.2) {
+    //   // this.hGridLines = 6;
+    //   high += offset;
+    //   low -= offset;
+    //   console.log(high, low)
+    //   range = high - low;
+    //   offset = range / 9;
+    //   highStart = (5 * offset) + low;
+    //   lowStart = (4 * offset) + low;
+    // }
+
+    const values = {
+      offset: this.offset,
+      highStart: this.highStart,
+      lowStart: this.lowStart,
     };
+    return values;
   }
 
-  upperHorizontalLines(n = ((this.canvasHeight / this.hGridLines) / 2) / 1) {
+  // upperHorizontalLines(n = ((this.canvasHeight / this.hGridLines) / 2) / 1, hVal = this.yAxisValues(window.UpperVal, window.LowerVal).highStart, i = 0) {
+  upperValues(n = ((this.canvasHeight / window.hGridLines) / 2) / 1, hVal = this.yAxisValues(window.UpperVal, window.LowerVal).highStart) {
+    if (!window.UpperVal || !window.LowerVal) return;
+    const offset = this.canvasHeight / window.hGridLines;
+    let offsetScale = 1;
+    const midPoint = this.canvasHeight * 0.5;
+    const yVals = this.yAxisValues(window.UpperVal, window.LowerVal);
+    let highVal = hVal;
+    // let yValsScale = 1;
+
+    if (n * window.verticalZoom > (this.canvasHeight * 0.5) + (window.verticalPan * window.verticalZoom)) {
+      highVal = +(yVals.highStart);
+      // if (window.verticalZoom <= 0.5) {
+      //   offsetScale = 0.5;
+      //   yValsScale = 2;
+      //   highVal += (yVals.offset * 0.5);
+      // }
+      // if (window.verticalZoom > 0.5) {
+      //   offsetScale = 1;
+      //   yValsScale = 1;
+      //   highVal = yVals.highStart;
+      // }
+      return;
+    }
+
+    this.context.save();
+    this.context.beginPath();
+    this.context.font = 'normal 20px Arial';
+    this.context.textBaseline = 'middle';
+    this.context.fillStyle = 'black';
+    this.context.fillText(
+      (highVal).toFixed(2),
+      -(this.canvasWidth - 20),
+      -((n * window.verticalZoom) + (midPoint - (window.verticalPan * window.verticalZoom))),
+    );
+    this.context.restore();
+
+    // highVal += +(yVals.offset * yValsScale);
+    highVal += yVals.offset;
+    this.upperValues(n + (offset / offsetScale), highVal);
+  }
+
+  lowerValues(n = ((this.canvasHeight / window.hGridLines) / 2) / 1, lVal = this.yAxisValues(window.UpperVal, window.LowerVal).lowStart) {
+    if (!window.UpperVal || !window.LowerVal) return;
+    const offset = this.canvasHeight / window.hGridLines;
+    let offsetScale = 1;
+    const midPoint = this.canvasHeight * 0.5;
+    const yVals = this.yAxisValues(window.UpperVal, window.LowerVal);
+    let lowVal = lVal;
+    // let yValsScale = 1;
+
+    if (n * window.verticalZoom > (this.canvasHeight * 0.5) + (window.verticalPan * window.verticalZoom)) {
+      lowVal = +(yVals.lowStart);
+      // if (window.verticalZoom <= 0.5) {
+      //   offsetScale = 0.5;
+      //   yValsScale = 2;
+      //   lowVal += (yVals.offset * 0.5);
+      // }
+      // if (window.verticalZoom > 0.5) {
+      //   offsetScale = 1;
+      //   yValsScale = 1;
+      //   lowVal = yVals.lowStart;
+      // }
+      return;
+    }
+
+    this.context.save();
+    this.context.beginPath();
+    this.context.font = 'normal 20px Arial';
+    this.context.textBaseline = 'middle';
+    this.context.fillStyle = 'black';
+    this.context.fillText(
+      (lowVal).toFixed(2),
+      -(this.canvasWidth - 20),
+      ((n * window.verticalZoom) - (midPoint + (-window.verticalPan * window.verticalZoom))),
+    );
+    this.context.restore();
+
+    lowVal -= yVals.offset;
+    this.lowerValues(n + (offset / offsetScale), lowVal);
+  }
+
+  upperHorizontalLines(n = ((this.canvasHeight / window.hGridLines) / 2) / 1) {
     if (!window.UpperVal || !window.LowerVal) return;
     const color = '#ccc';
     const x = -(this.canvasWidth);
     const width = 15;
     const height = 2;
-    const offset = this.canvasHeight / this.hGridLines;
+    const offset = this.canvasHeight / window.hGridLines;
     let offsetScale = 1;
     const midPoint = this.canvasHeight * 0.5;
 
     if (n * window.verticalZoom > (this.canvasHeight * 0.5) + (window.verticalPan * window.verticalZoom)) {
-      if (window.verticalZoom <= 0.5) {
-        offsetScale = 0.5;
-      }
-      if (window.verticalZoom > 0.5) {
-        offsetScale = 1;
-      }
+      // if (window.verticalZoom <= 0.5) {
+      //   offsetScale = 0.5;
+      // }
+      // if (window.verticalZoom > 0.5) {
+      //   offsetScale = 1;
+      // }
       return;
     }
 
@@ -110,90 +272,23 @@ export default class ChartYAxis extends StockChart {
     this.upperHorizontalLines(n + (offset / offsetScale));
   }
 
-  // upperHorizontalLines(n = ((this.canvasHeight / this.hGridLines) / 2) / 1, hVal = this.yAxisValues(window.UpperVal, window.LowerVal).highStart, i = 0) {
-  upperValues(n = ((this.canvasHeight / this.hGridLines) / 2) / 1, hVal = this.yAxisValues(window.UpperVal, window.LowerVal).highStart) {
+  lowerHorizontalLines(n = ((this.canvasHeight / window.hGridLines) / 2) / 1) {
     if (!window.UpperVal || !window.LowerVal) return;
-    // window.UpperVal = 0;
-    // console.log(window.UpperVal)
-    // debugger
-    // const color = '#cccccc';
-    // const x = -(this.canvasWidth);
-    // const width = 15;
-    // const height = 2;
-    const offset = this.canvasHeight / this.hGridLines;
-    let offsetScale = 1;
-    const midPoint = this.canvasHeight * 0.5;
-    const yVals = this.yAxisValues(window.UpperVal, window.LowerVal);
-    let highVal = hVal;
-    let yValsScale = 1;
-
-    if (n * window.verticalZoom > (this.canvasHeight * 0.5) + (window.verticalPan * window.verticalZoom)) {
-      highVal = +(yVals.highStart);
-      if (window.verticalZoom <= 0.5) {
-        offsetScale = 0.5;
-        yValsScale = 2;
-        highVal += (yVals.offset * 0.5);
-      }
-      if (window.verticalZoom > 0.5) {
-        offsetScale = 1;
-        yValsScale = 1;
-        highVal = yVals.highStart;
-      }
-      return;
-    }
-
-    // this.context.save();
-    // this.context.beginPath();
-    // this.context.transform(1, 0, 0, window.verticalZoom, 0, -(this.canvasHeight * 0.5));
-    // this.context.transform(1, 0, 0, 1, 0, (this.canvasHeight * 0.5) - (window.verticalPan));
-
-    // // this.context.fillStyle = color;
-    // // this.context.fillRect(
-    // //   x,
-    // //   -(midPoint + n) + (window.verticalPan + window.verticalPan),
-    // //   width,
-    // //   height / window.verticalZoom,
-    // // );
-    // this.context.restore();
-
-    this.context.save();
-    this.context.beginPath();
-    this.context.font = 'normal 20px Arial';
-    this.context.textBaseline = 'middle';
-    this.context.fillStyle = 'black';
-    this.context.fillText(
-      (highVal).toFixed(2),
-      -(this.canvasWidth - 20),
-      -((n * window.verticalZoom) + (midPoint - (window.verticalPan * window.verticalZoom))),
-    );
-    this.context.restore();
-
-    highVal += +(yVals.offset * yValsScale);
-    this.upperValues(n + (offset / offsetScale), highVal);
-  }
-
-  lowerHorizontalLines(n = ((this.canvasHeight / this.hGridLines) / 2) / 1, lVal = this.yAxisValues(window.UpperVal, window.LowerVal).lowStart) {
-    if (!window.UpperVal || !window.LowerVal) return;
-    const color = '#cccccc';
+    const color = '#ccc';
     const x = -(this.canvasWidth);
     const width = 15;
     const height = 2;
-    const offset = (this.canvasHeight * 0.5) / 5;
-    const offsetScale = 1;
+    const offset = this.canvasHeight / window.hGridLines;
+    let offsetScale = 1;
     const midPoint = this.canvasHeight * 0.5;
-    const yVals = this.yAxisValues(window.UpperVal, window.LowerVal);
-    let lowerVal = lVal;
-    const yValsScale = 1;
 
-    if (n * window.verticalZoom > (this.canvasHeight * 0.5) - (window.verticalPan * window.verticalZoom)) {
-      lowerVal = +(yVals.lowStart);
-
-      if (window.verticalZoom <= 0.5) {
-        lowerVal -= (yVals.offset * 0.5);
-      }
-      if (window.verticalZoom > 0.5) {
-        self.lowerVal = yVals.lowStart;
-      }
+    if (n * window.verticalZoom > (this.canvasHeight * 0.5) + (window.verticalPan * window.verticalZoom)) {
+      // if (window.verticalZoom <= 0.5) {
+      //   offsetScale = 0.5;
+      // }
+      // if (window.verticalZoom > 0.5) {
+      //   offsetScale = 1;
+      // }
       return;
     }
 
@@ -206,26 +301,69 @@ export default class ChartYAxis extends StockChart {
     this.context.fillStyle = color;
     this.context.fillRect(
       x,
-      -(midPoint - n) + (window.verticalPan) + (window.verticalPan),
+      -(midPoint - n) + (window.verticalPan + window.verticalPan),
       width,
       height / window.verticalZoom,
     );
-
     this.context.restore();
 
-    this.context.beginPath();
-    this.context.font = 'normal 20px Arial';
-    this.context.textBaseline = 'middle';
-    this.context.fillStyle = 'black';
-    this.context.fillText(
-      (lowerVal).toFixed(2),
-      -(this.canvasWidth - 20),
-      ((n * window.verticalZoom) - (midPoint + (-window.verticalPan * window.verticalZoom))),
-    );
-
-    lowerVal -= (yVals.offset * yValsScale);
-    this.lowerHorizontalLines(n + (offset / offsetScale), lowerVal);
+    this.lowerHorizontalLines(n + (offset / offsetScale));
   }
+
+  // lowerHorizontalLines(n = ((this.canvasHeight / this.hGridLines) / 2) / 1, lVal = this.yAxisValues(window.UpperVal, window.LowerVal).lowStart) {
+  //   if (!window.UpperVal || !window.LowerVal) return;
+  //   const color = '#cccccc';
+  //   const x = -(this.canvasWidth);
+  //   const width = 15;
+  //   const height = 2;
+  //   const offset = (this.canvasHeight * 0.5) / 5;
+  //   const offsetScale = 1;
+  //   const midPoint = this.canvasHeight * 0.5;
+  //   const yVals = this.yAxisValues(window.UpperVal, window.LowerVal);
+  //   let lowerVal = lVal;
+  //   const yValsScale = 1;
+
+  //   if (n * window.verticalZoom > (this.canvasHeight * 0.5) - (window.verticalPan * window.verticalZoom)) {
+  //     lowerVal = +(yVals.lowStart);
+
+  //     if (window.verticalZoom <= 0.5) {
+  //       lowerVal -= (yVals.offset * 0.5);
+  //     }
+  //     if (window.verticalZoom > 0.5) {
+  //       self.lowerVal = yVals.lowStart;
+  //     }
+  //     return;
+  //   }
+
+  //   this.context.save();
+  //   this.context.beginPath();
+
+  //   this.context.transform(1, 0, 0, window.verticalZoom, 0, -(this.canvasHeight * 0.5));
+  //   this.context.transform(1, 0, 0, 1, 0, (this.canvasHeight * 0.5) - (window.verticalPan));
+
+  //   this.context.fillStyle = color;
+  //   this.context.fillRect(
+  //     x,
+  //     -(midPoint - n) + (window.verticalPan) + (window.verticalPan),
+  //     width,
+  //     height / window.verticalZoom,
+  //   );
+
+  //   this.context.restore();
+
+  //   this.context.beginPath();
+  //   this.context.font = 'normal 20px Arial';
+  //   this.context.textBaseline = 'middle';
+  //   this.context.fillStyle = 'black';
+  //   this.context.fillText(
+  //     (lowerVal).toFixed(2),
+  //     -(this.canvasWidth - 20),
+  //     ((n * window.verticalZoom) - (midPoint + (-window.verticalPan * window.verticalZoom))),
+  //   );
+
+  //   lowerVal -= (yVals.offset * yValsScale);
+  //   this.lowerHorizontalLines(n + (offset / offsetScale), lowerVal);
+  // }
 
   // HorizontalUpperRange() {
   //   const color = 'lightblue';
