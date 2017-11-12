@@ -13,7 +13,7 @@ export default class ChartYAxis extends StockChart {
     const x = 0;
     const y = -(this.yAxisPoint(price.current, window.gridUpperVal, window.gridLowerVal));
     const width = -(this.canvasWidth);
-    const height = 40;
+    const height = 32;  //40
     const midPoint = this.canvasHeight * 0.5;
 
     this.context.save();
@@ -26,27 +26,44 @@ export default class ChartYAxis extends StockChart {
     this.context.beginPath();
     this.context.fillStyle = bgColor;
 
-    // this.context.fillRect(
-    //   x,
-    //   (y + (window.verticalPan * 2)) - (20 / window.verticalZoom),
-    //   width,
-    //   height / (window.verticalZoom),
-    // );
-
-    this.context.fillRect(
-      this.canvasWidth / 2,
-      (y + (window.verticalPan * 2)) - (20 / window.verticalBarZoom),
-      width,
-      height / (window.verticalBarZoom),
-    );
-
+    // label background 
     this.context.fillRect(
       x,
-      y + (window.verticalPan + window.verticalPan),
+      (y + (window.verticalPan * 2)) - ((16) / window.verticalZoom),
       width,
-      2 / (window.verticalBarZoom),
+      height / (window.verticalZoom),
     );
 
+    // move label background so values underneath can be seen
+    // this.context.fillRect(
+    //   this.canvasWidth / 2,
+    //   (y + (window.verticalPan * 2)) - (20 / window.verticalBarZoom),
+    //   width,
+    //   height / (window.verticalBarZoom),
+    // );
+
+    // current price line
+    // this.context.fillRect(
+    //   x,
+    //   y + (window.verticalPan + window.verticalPan),
+    //   width,
+    //   2 / (window.verticalBarZoom),
+    // );
+
+    this.context.restore();
+
+    this.context.save();
+    this.context.beginPath();
+    this.context.translate(0, -(this.canvasHeight * 0.5));
+
+    this.context.font = 'normal 20px Arial';
+    this.context.textBaseline = 'middle';
+    this.context.fillStyle = fgColor;
+    this.context.fillText(
+      (price.current).toFixed(2),
+      width + 20,
+      ((y + window.verticalPan) * window.verticalZoom) + (midPoint * window.verticalZoom),
+    );
     this.context.restore();
 
     // this.context.save();
@@ -58,24 +75,10 @@ export default class ChartYAxis extends StockChart {
     // this.context.fillStyle = fgColor;
     // this.context.fillText(
     //   (price.current).toFixed(2),
-    //   width + 20,
-    //   ((y + window.verticalPan) * window.verticalZoom) + (midPoint * window.verticalZoom),
+    //   -(this.canvasWidth / 2) + 20,
+    //   ((y + window.verticalPan) * window.verticalBarZoom) + (midPoint * window.verticalBarZoom),
     // );
     // this.context.restore();
-
-    this.context.save();
-    this.context.beginPath();
-    this.context.translate(0, -(this.canvasHeight * 0.5));
-
-    this.context.font = 'normal 20px Arial';
-    this.context.textBaseline = 'middle';
-    this.context.fillStyle = fgColor;
-    this.context.fillText(
-      (price.current).toFixed(2),
-      -(this.canvasWidth / 2) + 20,
-      ((y + window.verticalPan) * window.verticalBarZoom) + (midPoint * window.verticalBarZoom),
-    );
-    this.context.restore();
   }
 
   /**
