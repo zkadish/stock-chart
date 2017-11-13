@@ -1,7 +1,7 @@
 import ChartLoop from 'src/javascripts/ChartLoop';
 import StockChart from 'src/javascripts/StockChart';
-import ChartYAxis from 'src/javascripts/ChartYAxis';
-import ChartXAxis from 'src/javascripts/ChartXAxis';
+import YAxisChart from 'src/javascripts/YAxisChart';
+import XAxisChart from 'src/javascripts/XAxisChart';
 import Options from 'src/javascripts/chartOptions';
 import panChart from 'src/javascripts/panChart';
 import * as scaleChart from 'src/javascripts/scaleChart';
@@ -15,8 +15,8 @@ class Chart {
     // DOM set up
     // TODO: create all dom elements with js...
     this.stockChartDOM = document.querySelector('.stockchart-container');
-    this.yaxisDOM = document.querySelector('.yaxis-container');
-    this.xaxisDOM = document.querySelector('.xaxis-container');
+    this.yAxisDOM = document.querySelector('.yaxis-container');
+    this.xAxisDOM = document.querySelector('.xaxis-container');
 
     // set up on window resize event
     const windowOnResize = new CustomEvent('window:onresize');
@@ -31,17 +31,17 @@ class Chart {
 
     this.options = Options;
     this.stockChart = null;
-    this.chartYAxis = null;
-    this.chartXAxis = null;
+    this.yAxisChart = null;
+    this.xAxisChart = null;
     this.chartLoop = null;
   }
 
   init() {
     // this.options = options;
     this.stockChart = new StockChart(this.stockChartDOM);
-    this.chartYAxis = new ChartYAxis(this.yaxisDOM);
-    this.chartXAxis = new ChartXAxis(this.xaxisDOM);
-    this.chartLoop = new ChartLoop(this.stockChart, this.chartYAxis, this.chartXAxis);
+    this.yAxisChart = new YAxisChart(this.yAxisDOM);
+    this.xAxisChart = new XAxisChart(this.xAxisDOM);
+    this.chartLoop = new ChartLoop(this.stockChart, this.yAxisChart, this.xAxisChart);
     this.onStart();
   }
 
