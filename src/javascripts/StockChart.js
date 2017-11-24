@@ -142,7 +142,8 @@ export default class StockChart {
       // window.UpperVal = Math.ceil(priceData.High);
       window.gridUpperVal = priceData.High;
       window.UpperVal = priceData.High;
-      // debugger
+      window.ConstUpperVal = priceData.High;
+      console.log('window.UpperVal', window.UpperVal);
     }
   }
 
@@ -153,6 +154,9 @@ export default class StockChart {
       // window.LowerVal = Math.floor(priceData.Low);
       window.gridLowerVal = priceData.Low;
       window.LowerVal = priceData.Low;
+      window.ConstLowerVal = priceData.Low;
+      console.log('window.LowerVal', window.LowerVal)
+      
     }
   }
 

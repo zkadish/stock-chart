@@ -1,4 +1,4 @@
-let zoom = 100;
+window.zoom = 100;
 window.verticalZoom = 1;
 window.verticalBarZoom = 1;
 let scaling = '';
@@ -20,6 +20,62 @@ let lockSixDown = false;
 let lockSevenDown = false;
 let lockEightDown = false;
 
+export function vZoomReset() {
+  lockOneUp = false;
+  lockTwoUp = false;
+  lockThreeUp = false;
+  lockFourUp = false;
+  lockFiveUp = false;
+  lockSixUp = false;
+  lockSevenUp = false;
+
+  lockOneDown = false;
+  lockTwoDown = false;
+  lockThreeDown = false;
+  lockFourDown = false;
+  lockFiveDown = false;
+  lockSixDown = false;
+  lockSevenDown = false;
+  lockEightDown = false;
+
+  console.log('lockOneDown');
+  // const high = window.UpperVal;
+  // const low = window.LowerVal;
+  // const range = high - low;
+  // const offset = range / 9;
+  // window.UpperVal += offset;
+  // window.LowerVal -= offset;
+  window.hGridLines = 10;
+}
+
+function vZoomDownOne() {
+  lockOneUp = true;
+  lockTwoUp = false;
+  lockThreeUp = false;
+  lockFourUp = false;
+  lockFiveUp = false;
+  lockSixUp = false;
+  lockSevenUp = false;
+
+  lockOneDown = true;
+  lockTwoDown = false;
+  lockThreeDown = false;
+  lockFourDown = false;
+  lockFiveDown = false;
+  lockSixDown = false;
+  lockSevenDown = false;
+  lockEightDown = false;
+
+  console.log('lockOneDown');
+  const high = window.UpperVal;
+  const low = window.LowerVal;
+  const range = high - low;
+  const offset = range / 9;
+  window.UpperVal += offset;
+  window.LowerVal -= offset;
+  window.hGridLines = 10;
+}
+
 export function verticalZoom() {
   const yAxisContainer = document.querySelector('.yaxis-canvas');
   let mousePos = null;
@@ -28,19 +84,19 @@ export function verticalZoom() {
     // scale up
     if (mousePos.y > e.clientY) {
       scaling = 'up';
-      zoom += 1;
-      zoom = Number(zoom.toFixed(2));
-      window.verticalZoom = zoom * 0.01;
-      window.verticalBarZoom = zoom * 0.01;
+      window.zoom += 1;
+      window.zoom = Number(window.zoom.toFixed(2));
+      window.verticalZoom = window.zoom * 0.01;
+      window.verticalBarZoom = window.zoom * 0.01;
       console.log(window.verticalZoom);
     }
     // scale down
     if (mousePos.y < e.clientY) {
       scaling = 'down';
-      zoom -= 1;
-      zoom = Number(zoom.toFixed(2));
-      window.verticalZoom = zoom * 0.01;
-      window.verticalBarZoom = zoom * 0.01;
+      window.zoom -= 1;
+      window.zoom = Number(window.zoom.toFixed(2));
+      window.verticalZoom = window.zoom * 0.01;
+      window.verticalBarZoom = window.zoom * 0.01;
       console.log(window.verticalZoom);
     }
 
@@ -174,31 +230,32 @@ export function verticalZoom() {
     }
 
     if (!lockOneDown && scaling === 'down' && window.verticalZoom === 1) {
-      lockOneUp = true;
-      lockTwoUp = false;
-      lockThreeUp = false;
-      lockFourUp = false;
-      lockFiveUp = false;
-      lockSixUp = false;
-      lockSevenUp = false;
+      vZoomDownOne();
+      // lockOneUp = true;
+      // lockTwoUp = false;
+      // lockThreeUp = false;
+      // lockFourUp = false;
+      // lockFiveUp = false;
+      // lockSixUp = false;
+      // lockSevenUp = false;
 
-      lockOneDown = true;
-      lockTwoDown = false;
-      lockThreeDown = false;
-      lockFourDown = false;
-      lockFiveDown = false;
-      lockSixDown = false;
-      lockSevenDown = false;
-      lockEightDown = false;
+      // lockOneDown = true;
+      // lockTwoDown = false;
+      // lockThreeDown = false;
+      // lockFourDown = false;
+      // lockFiveDown = false;
+      // lockSixDown = false;
+      // lockSevenDown = false;
+      // lockEightDown = false;
       
-      console.log('lockOneDown');
-      const high = window.UpperVal;
-      const low = window.LowerVal;
-      const range = high - low;
-      const offset = range / 7;
-      window.UpperVal += offset;
-      window.LowerVal -= offset;
-      window.hGridLines = 10;
+      // console.log('lockOneDown');
+      // const high = window.UpperVal;
+      // const low = window.LowerVal;
+      // const range = high - low;
+      // const offset = range / 7;
+      // window.UpperVal += offset;
+      // window.LowerVal -= offset;
+      // window.hGridLines = 10;
     }
     
 
