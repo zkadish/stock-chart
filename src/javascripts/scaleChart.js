@@ -20,8 +20,34 @@ let lockSixDown = false;
 let lockSevenDown = false;
 let lockEightDown = false;
 
+const lock = {
+  oneUp: false,
+  twoUp: false,
+  threeUp: false,
+  fourUp: false,
+  fiveUp: false,
+  sixUp: false,
+  sevenUp: false,
+  oneDown: false,
+  twoDown: false,
+  threeDown: false,
+  fourDown: false,
+  fiveDown: false,
+  sixDown: false,
+  sevenDown: false,
+  eightDown: false,
+};
+
 export function vZoomReset() {
-  lockOneUp = false;
+  Object.keys(lock).forEach((prop) => {
+    if (prop.includes('one')) {
+      lock[prop] = true;
+    } else {
+      lock[prop] = false;
+    }
+  });
+
+  lockOneUp = true;
   lockTwoUp = false;
   lockThreeUp = false;
   lockFourUp = false;
@@ -29,7 +55,7 @@ export function vZoomReset() {
   lockSixUp = false;
   lockSevenUp = false;
 
-  lockOneDown = false;
+  lockOneDown = true;
   lockTwoDown = false;
   lockThreeDown = false;
   lockFourDown = false;
@@ -48,7 +74,49 @@ export function vZoomReset() {
   window.hGridLines = 10;
 }
 
+function vZoomUpOne() {
+  Object.keys(lock).forEach((prop) => {
+    if (prop.includes('one')) {
+      lock[prop] = true;
+    } else {
+      lock[prop] = false;
+    }
+  });
+  lockOneUp = true;
+  lockTwoUp = false;
+  lockThreeUp = false;
+  lockFourUp = false;
+  lockFiveUp = false;
+  lockSixUp = false;
+  lockSevenUp = false;
+
+  lockOneDown = true;
+  lockTwoDown = false;
+  lockThreeDown = false;
+  lockFourDown = false;
+  lockFiveDown = false;
+  lockSixDown = false;
+  lockSevenDown = false;
+  lockEightDown = false;
+  
+  console.log('lockOneUp');
+  const high = window.UpperVal;
+  const low = window.LowerVal;
+  const range = high - low;
+  const offset = range / 11;
+  window.UpperVal -= offset;
+  window.LowerVal += offset;
+  window.hGridLines = 10;
+}
+
 function vZoomDownOne() {
+  Object.keys(lock).forEach((prop) => {
+    if (prop.includes('one')) {
+      lock[prop] = true;
+    } else {
+      lock[prop] = false;
+    }
+  });
   lockOneUp = true;
   lockTwoUp = false;
   lockThreeUp = false;
@@ -70,7 +138,7 @@ function vZoomDownOne() {
   const high = window.UpperVal;
   const low = window.LowerVal;
   const range = high - low;
-  const offset = range / 9;
+  const offset = range / 7;
   window.UpperVal += offset;
   window.LowerVal -= offset;
   window.hGridLines = 10;
@@ -202,31 +270,32 @@ export function verticalZoom() {
      * Scaling is 1
      */
     if (!lockOneUp && scaling === 'up' && window.verticalZoom === 1) {
-      lockOneUp = true;
-      lockTwoUp = false;
-      lockThreeUp = false;
-      lockFourUp = false;
-      lockFiveUp = false;
-      lockSixUp = false;
-      lockSevenUp = false;
+      vZoomUpOne();
+      // lockOneUp = true;
+      // lockTwoUp = false;
+      // lockThreeUp = false;
+      // lockFourUp = false;
+      // lockFiveUp = false;
+      // lockSixUp = false;
+      // lockSevenUp = false;
 
-      lockOneDown = true;
-      lockTwoDown = false;
-      lockThreeDown = false;
-      lockFourDown = false;
-      lockFiveDown = false;
-      lockSixDown = false;
-      lockSevenDown = false;
-      lockEightDown = false;
+      // lockOneDown = true;
+      // lockTwoDown = false;
+      // lockThreeDown = false;
+      // lockFourDown = false;
+      // lockFiveDown = false;
+      // lockSixDown = false;
+      // lockSevenDown = false;
+      // lockEightDown = false;
       
-      console.log('lockOneUp');
-      const high = window.UpperVal;
-      const low = window.LowerVal;
-      const range = high - low;
-      const offset = range / 11;
-      window.UpperVal -= offset;
-      window.LowerVal += offset;
-      window.hGridLines = 10;
+      // console.log('lockOneUp');
+      // const high = window.UpperVal;
+      // const low = window.LowerVal;
+      // const range = high - low;
+      // const offset = range / 11;
+      // window.UpperVal -= offset;
+      // window.LowerVal += offset;
+      // window.hGridLines = 10;
     }
 
     if (!lockOneDown && scaling === 'down' && window.verticalZoom === 1) {
