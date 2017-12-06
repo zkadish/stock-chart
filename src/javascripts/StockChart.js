@@ -143,7 +143,6 @@ export default class StockChart {
       window.gridUpperVal = priceData.High;
       window.UpperVal = priceData.High;
       window.ConstUpperVal = priceData.High;
-      console.log('window.UpperVal', window.UpperVal);
     }
   }
 
@@ -154,9 +153,7 @@ export default class StockChart {
       // window.LowerVal = Math.floor(priceData.Low);
       window.gridLowerVal = priceData.Low;
       window.LowerVal = priceData.Low;
-      window.ConstLowerVal = priceData.Low;
-      console.log('window.LowerVal', window.LowerVal)
-      
+      window.ConstLowerVal = priceData.Low;      
     }
   }
 
@@ -221,6 +218,7 @@ export default class StockChart {
       }
       window.barClosePos = barClosePos;
       window.barOpenPos = barOpenPos;
+      // console.log(barClosePos, barOpenPos)
     }
 
     if (barClosePos > barOpenPos) {
@@ -383,7 +381,7 @@ export default class StockChart {
     const x = 0;
     
     const y = -(this.yAxisPoint(price.current, this.UpperVal, this.LowerVal));
-    if (price.current > window.barOpenPos) {
+    if ((y * -1) > window.barOpenPos) {
       color = 'green';
     }
 

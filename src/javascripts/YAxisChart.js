@@ -45,7 +45,7 @@ export default class ChartYAxis extends StockChart {
     // this.price = price;
     // this.valueRangeLoop(0, price);
 
-    if (price.current > window.barOpenPos) {
+    if ((y * -1) > window.barOpenPos) {
       bgColor = 'green';
     }
 
