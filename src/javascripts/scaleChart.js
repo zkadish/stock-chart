@@ -47,24 +47,24 @@ export function vZoomReset() {
     }
   });
 
-  lockOneUp = true;
-  lockTwoUp = false;
-  lockThreeUp = false;
-  lockFourUp = false;
-  lockFiveUp = false;
-  lockSixUp = false;
-  lockSevenUp = false;
+  // lockOneUp = true;
+  // lockTwoUp = false;
+  // lockThreeUp = false;
+  // lockFourUp = false;
+  // lockFiveUp = false;
+  // lockSixUp = false;
+  // lockSevenUp = false;
 
-  lockOneDown = true;
-  lockTwoDown = false;
-  lockThreeDown = false;
-  lockFourDown = false;
-  lockFiveDown = false;
-  lockSixDown = false;
-  lockSevenDown = false;
-  lockEightDown = false;
+  // lockOneDown = true;
+  // lockTwoDown = false;
+  // lockThreeDown = false;
+  // lockFourDown = false;
+  // lockFiveDown = false;
+  // lockSixDown = false;
+  // lockSevenDown = false;
+  // lockEightDown = false;
 
-  console.log('lockOneDown');
+  // console.log('lockOneDown');
   // const high = window.UpperVal;
   // const low = window.LowerVal;
   // const range = high - low;
@@ -82,24 +82,24 @@ function vZoomUpOne() {
       lock[prop] = false;
     }
   });
-  lockOneUp = true;
-  lockTwoUp = false;
-  lockThreeUp = false;
-  lockFourUp = false;
-  lockFiveUp = false;
-  lockSixUp = false;
-  lockSevenUp = false;
+  // lockOneUp = true;
+  // lockTwoUp = false;
+  // lockThreeUp = false;
+  // lockFourUp = false;
+  // lockFiveUp = false;
+  // lockSixUp = false;
+  // lockSevenUp = false;
 
-  lockOneDown = true;
-  lockTwoDown = false;
-  lockThreeDown = false;
-  lockFourDown = false;
-  lockFiveDown = false;
-  lockSixDown = false;
-  lockSevenDown = false;
-  lockEightDown = false;
+  // lockOneDown = true;
+  // lockTwoDown = false;
+  // lockThreeDown = false;
+  // lockFourDown = false;
+  // lockFiveDown = false;
+  // lockSixDown = false;
+  // lockSevenDown = false;
+  // lockEightDown = false;
   
-  console.log('lockOneUp');
+  // console.log('lockOneUp');
   const high = window.UpperVal;
   const low = window.LowerVal;
   const range = high - low;
@@ -117,24 +117,24 @@ function vZoomDownOne() {
       lock[prop] = false;
     }
   });
-  lockOneUp = true;
-  lockTwoUp = false;
-  lockThreeUp = false;
-  lockFourUp = false;
-  lockFiveUp = false;
-  lockSixUp = false;
-  lockSevenUp = false;
+  // lockOneUp = true;
+  // lockTwoUp = false;
+  // lockThreeUp = false;
+  // lockFourUp = false;
+  // lockFiveUp = false;
+  // lockSixUp = false;
+  // lockSevenUp = false;
 
-  lockOneDown = true;
-  lockTwoDown = false;
-  lockThreeDown = false;
-  lockFourDown = false;
-  lockFiveDown = false;
-  lockSixDown = false;
-  lockSevenDown = false;
-  lockEightDown = false;
+  // lockOneDown = true;
+  // lockTwoDown = false;
+  // lockThreeDown = false;
+  // lockFourDown = false;
+  // lockFiveDown = false;
+  // lockSixDown = false;
+  // lockSevenDown = false;
+  // lockEightDown = false;
 
-  console.log('lockOneDown');
+  // console.log('lockOneDown');
   const high = window.UpperVal;
   const low = window.LowerVal;
   const range = high - low;
@@ -142,6 +142,27 @@ function vZoomDownOne() {
   window.UpperVal += offset;
   window.LowerVal -= offset;
   window.hGridLines = 10;
+}
+
+function vZoomDown(step, previous) {
+  lock[`${step}Down`] = true;
+  lock[`${step}Up`] = true;
+  lock[`${previous}`] = false;
+  // console.log('lockTwoDown');
+  return function update(direction, divisions, lines) {
+    const high = window.UpperVal;
+    const low = window.LowerVal;
+    const range = high - low;
+    const offset = range / divisions;
+    window.hGridLines = lines;
+    if (direction === 'down') {
+      window.UpperVal += offset;
+      window.LowerVal -= offset;
+    } else {
+      window.UpperVal -= offset;
+      window.LowerVal += offset;
+    }
+  }
 }
 
 export function verticalZoom() {
@@ -168,108 +189,115 @@ export function verticalZoom() {
       console.log(window.verticalZoom);
     }
 
-    if (!lockFiveUp && scaling === 'up' && window.verticalZoom === 2.58) {
-      lockFiveUp = true;
-      lockFiveDown = true;
-      lockFourDown = false;
-      console.log('lockFiveUp');
-      const high = window.UpperVal;
-      const low = window.LowerVal;
-      const range = high - low;
-      const offset = range / 9;
-      window.UpperVal -= offset;
-      window.LowerVal += offset;
-      window.hGridLines = 25.8;
+    if (!lock.fiveUp && scaling === 'up' && window.verticalZoom === 2.58) {
+      vZoomDown('five', 'fourDown')('up', 9, 25.8);
+      // lockFiveUp = true;
+      // lockFiveDown = true;
+      // lockFourDown = false;
+      // console.log('lockFiveUp');
+      // const high = window.UpperVal;
+      // const low = window.LowerVal;
+      // const range = high - low;
+      // const offset = range / 9;
+      // window.UpperVal -= offset;
+      // window.LowerVal += offset;
+      // window.hGridLines = 25.8;
     }
 
-    if (!lockFourDown && scaling === 'down' && window.verticalZoom === 2.02) {
-      lockFourDown = true;
-      lockFourUp = true;
-      lockFiveUp = false;
-      console.log('lockFourDown');
-      const high = window.UpperVal;
-      const low = window.LowerVal;
-      const range = high - low;
-      const offset = range / 7;
-      window.UpperVal += offset;
-      window.LowerVal -= offset;
-      window.hGridLines = 20.2;
+    if (!lock.fourDown && scaling === 'down' && window.verticalZoom === 2.02) {
+      vZoomDown('four', 'fiveUp')('down', 7, 20.2);
+      // lockFourDown = true;
+      // lockFourUp = true;
+      // lockFiveUp = false;
+      // console.log('lockFourDown');
+      // const high = window.UpperVal;
+      // const low = window.LowerVal;
+      // const range = high - low;
+      // const offset = range / 7;
+      // window.UpperVal += offset;
+      // window.LowerVal -= offset;
+      // window.hGridLines = 20.2;
     }
 
-    if (!lockFourUp && scaling === 'up' && window.verticalZoom === 2.02) {
-      lockFourUp = true;
-      lockFourDown = true;
-      lockThreeDown = false;
-      console.log('lockFourUp');
-      const high = window.UpperVal;
-      const low = window.LowerVal;
-      const range = high - low;
-      const offset = range / 9;
-      window.UpperVal -= offset;
-      window.LowerVal += offset;
-      window.hGridLines = 20.2;
+    if (!lock.fourUp && scaling === 'up' && window.verticalZoom === 2.02) {
+      vZoomDown('four', 'threeDown')('up', 9, 20.2);
+      // lockFourUp = true;
+      // lockFourDown = true;
+      // lockThreeDown = false;
+      // console.log('lockFourUp');
+      // const high = window.UpperVal;
+      // const low = window.LowerVal;
+      // const range = high - low;
+      // const offset = range / 9;
+      // window.UpperVal -= offset;
+      // window.LowerVal += offset;
+      // window.hGridLines = 20.2;
     }
 
-    if (!lockThreeDown && scaling === 'down' && window.verticalZoom === 1.6) {
-      lockThreeDown = true;
-      lockThreeUp = true;
-      lockFourUp = false;
-      console.log('lockThreeDown');
-      const high = window.UpperVal;
-      const low = window.LowerVal;
-      const range = high - low;
-      const offset = range / 7;
-      window.UpperVal += offset;
-      window.LowerVal -= offset;
-      window.hGridLines = 16;
+    if (!lock.threeDown && scaling === 'down' && window.verticalZoom === 1.6) {
+      vZoomDown('three', 'fourUp')('down', 7, 16);
+      // lockThreeDown = true;
+      // lockThreeUp = true;
+      // lockFourUp = false;
+      // console.log('lockThreeDown');
+      // const high = window.UpperVal;
+      // const low = window.LowerVal;
+      // const range = high - low;
+      // const offset = range / 7;
+      // window.UpperVal += offset;
+      // window.LowerVal -= offset;
+      // window.hGridLines = 16;
     }
     
-    if (!lockThreeUp && scaling === 'up' && window.verticalZoom === 1.6) {
-      lockThreeUp = true;
-      lockThreeDown = true;
-      lockTwoDown = false;
-      console.log('lockThreeUp');
-      const high = window.UpperVal;
-      const low = window.LowerVal;
-      const range = high - low;
-      const offset = range / 9;
-      window.UpperVal -= offset;
-      window.LowerVal += offset;
-      window.hGridLines = 16;
+    if (!lock.threeUp && scaling === 'up' && window.verticalZoom === 1.6) {
+      vZoomDown('three', 'twoDown')('up', 9, 16);
+      // lockThreeUp = true;
+      // lockThreeDown = true;
+      // lockTwoDown = false;
+      // console.log('lockThreeUp');
+      // const high = window.UpperVal;
+      // const low = window.LowerVal;
+      // const range = high - low;
+      // const offset = range / 9;
+      // window.UpperVal -= offset;
+      // window.LowerVal += offset;
+      // window.hGridLines = 16;
     }
 
-    if (!lockTwoDown && scaling === 'down' && window.verticalZoom === 1.26) {
-      lockTwoDown = true;
-      lockTwoUp = true;
-      lockThreeDown = false;
-      console.log('lockTwoUp');
-      const high = window.UpperVal;
-      const low = window.LowerVal;
-      const range = high - low;
-      const offset = range / 7;
-      window.UpperVal += offset;
-      window.LowerVal -= offset;
-      window.hGridLines = 12.6;
+    if (!lock.twoDown && scaling === 'down' && window.verticalZoom === 1.26) {
+      vZoomDown('two', 'threeUp')('down', 7, 12.6);
+      // lockTwoDown = true;
+      // lockTwoUp = true;
+      // lockThreeDown = false;
+      // console.log('lockTwoUp');
+      // const high = window.UpperVal;
+      // const low = window.LowerVal;
+      // const range = high - low;
+      // const offset = range / 7;
+      // window.UpperVal += offset;
+      // window.LowerVal -= offset;
+      // window.hGridLines = 12.6;
     }
 
-    if (!lockTwoUp && scaling === 'up' && window.verticalZoom === 1.26) {
-      lockTwoUp = true;
-      lockTwoDown = true;
-      lockOneDown = false;
-      console.log('lockTwoUp');
-      const high = window.UpperVal;
-      const low = window.LowerVal;
-      const range = high - low;
-      const offset = range / 9;
-      window.UpperVal -= offset;
-      window.LowerVal += offset;
-      window.hGridLines = 12.6;
+    if (!lock.twoUp && scaling === 'up' && window.verticalZoom === 1.26) {
+      vZoomDown('two', 'oneDown')('up', 9, 12.6);
+      // lockTwoUp = true;
+      // lockTwoDown = true;
+      // lockOneDown = false;
+      // console.log('lockTwoUp');
+      // const high = window.UpperVal;
+      // const low = window.LowerVal;
+      // const range = high - low;
+      // const offset = range / 9;
+      // window.UpperVal -= offset;
+      // window.LowerVal += offset;
+      // window.hGridLines = 12.6;
     }
 
     /**
      * Scaling is 1
      */
-    if (!lockOneUp && scaling === 'up' && window.verticalZoom === 1) {
+    if (!lock.oneUp && scaling === 'up' && window.verticalZoom === 1) {
       vZoomUpOne();
       // lockOneUp = true;
       // lockTwoUp = false;
@@ -298,7 +326,7 @@ export function verticalZoom() {
       // window.hGridLines = 10;
     }
 
-    if (!lockOneDown && scaling === 'down' && window.verticalZoom === 1) {
+    if (!lock.oneDown && scaling === 'down' && window.verticalZoom === 1) {
       vZoomDownOne();
       // lockOneUp = true;
       // lockTwoUp = false;
@@ -331,183 +359,195 @@ export function verticalZoom() {
     /**
      * Scaling less then 1
      */
-    if (!lockTwoDown && scaling === 'down' && window.verticalZoom === 0.80) {
-      lockTwoDown = true;
-      lockTwoUp = true;
-      lockOneUp = false;
-      console.log('lockTwoDown');
-      const high = window.UpperVal;
-      const low = window.LowerVal;
-      const range = high - low;
-      const offset = range / 9;
-      window.UpperVal += offset;
-      window.LowerVal -= offset;
-      window.hGridLines = 8;
+    if (!lock.twoDown && scaling === 'down' && window.verticalZoom === 0.80) {
+      vZoomDown('two', 'oneUp')('down', 9, 8);
+      // lockTwoDown = true;
+      // lockTwoUp = true;
+      // lockOneUp = false;
+      // console.log('lockTwoDown');
+      // const high = window.UpperVal;
+      // const low = window.LowerVal;
+      // const range = high - low;
+      // const offset = range / 9;
+      // window.UpperVal += offset;
+      // window.LowerVal -= offset;
+      // window.hGridLines = 8;
     }
 
-    if (!lockTwoUp && scaling === 'up' && window.verticalZoom === 0.80) {
-      lockTwoUp = true;
-      lockTwoDown = true;
-      lockThreeDown = false;
-      console.log('lockTwoUp');
-      const high = window.UpperVal;
-      const low = window.LowerVal;
-      const range = high - low;
-      const offset = range / 11;
-      window.UpperVal -= offset;
-      window.LowerVal += offset;
-      window.hGridLines = 8;
+    if (!lock.twoUp && scaling === 'up' && window.verticalZoom === 0.80) {
+      vZoomDown('two', 'threeDown')('up', 11, 8);
+      // lockTwoUp = true;
+      // lockTwoDown = true;
+      // lockThreeDown = false;
+      // console.log('lockTwoUp');
+      // const high = window.UpperVal;
+      // const low = window.LowerVal;
+      // const range = high - low;
+      // const offset = range / 11;
+      // window.UpperVal -= offset;
+      // window.LowerVal += offset;
+      // window.hGridLines = 8;
     }
 
-    if (!lockThreeDown && scaling === 'down' && window.verticalZoom === 0.64) {
-      lockThreeDown = true;
-      lockThreeUp = true;
-      lockTwoUp = false;
-      console.log('lockThreeDown');
-      const high = window.UpperVal;
-      const low = window.LowerVal;
-      const range = high - low;
-      const offset = range / 9;
-      window.UpperVal += offset;
-      window.LowerVal -= offset;
-      window.hGridLines = 6.4;
+    if (!lock.threeDown && scaling === 'down' && window.verticalZoom === 0.64) {
+      vZoomDown('three', 'twoUp')('down', 9, 6.4);
+      // lockThreeDown = true;
+      // lockThreeUp = true;
+      // lockTwoUp = false;
+      // console.log('lockThreeDown');
+      // const high = window.UpperVal;
+      // const low = window.LowerVal;
+      // const range = high - low;
+      // const offset = range / 9;
+      // window.UpperVal += offset;
+      // window.LowerVal -= offset;
+      // window.hGridLines = 6.4;
     }
 
-    if (!lockThreeUp && scaling === 'up' && window.verticalZoom === 0.64) {
-      lockThreeUp = true;
-      lockThreeDown = true;
-      lockFourDown = false;
-      console.log('lockThreeUp');
-      const high = window.UpperVal;
-      const low = window.LowerVal;
-      const range = high - low;
-      const offset = range / 11;
-      window.UpperVal -= offset;
-      window.LowerVal += offset;
-      window.hGridLines = 6.4;
+    if (!lock.threeUp && scaling === 'up' && window.verticalZoom === 0.64) {
+      vZoomDown('three', 'fourDown')('up', 11, 6.4);
+      // lockThreeUp = true;
+      // lockThreeDown = true;
+      // lockFourDown = false;
+      // console.log('lockThreeUp');
+      // const high = window.UpperVal;
+      // const low = window.LowerVal;
+      // const range = high - low;
+      // const offset = range / 11;
+      // window.UpperVal -= offset;
+      // window.LowerVal += offset;
+      // window.hGridLines = 6.4;
     }
 
-    if (!lockFourDown && scaling === 'down' && window.verticalZoom === 0.52) {
-      lockFourDown = true;
-      lockFourUp = true;
-      lockThreeUp = false;
-      console.log('lockFourDown');
-      const high = window.UpperVal;
-      const low = window.LowerVal;
-      const range = high - low;
-      const offset = range / 9;
-      window.UpperVal += offset;
-      window.LowerVal -= offset;
-      window.hGridLines = 5.2;
+    if (!lock.fourDown && scaling === 'down' && window.verticalZoom === 0.52) {
+      vZoomDown('four', 'threeUp')('down', 9, 5.2);
+      // lockFourDown = true;
+      // lockFourUp = true;
+      // lockThreeUp = false;
+      // console.log('lockFourDown');
+      // const high = window.UpperVal;
+      // const low = window.LowerVal;
+      // const range = high - low;
+      // const offset = range / 9;
+      // window.UpperVal += offset;
+      // window.LowerVal -= offset;
+      // window.hGridLines = 5.2;
     }
 
-    if (!lockFourUp && scaling === 'up' && window.verticalZoom === 0.52) {
-      lockFourUp = true;
-      lockFourDown = true;
-      lockFiveDown = false;
-      console.log('lockFourUp');
-      const high = window.UpperVal;
-      const low = window.LowerVal;
-      const range = high - low;
-      const offset = range / 11;
-      window.UpperVal -= offset;
-      window.LowerVal += offset;
-      window.hGridLines = 5.2;
+    if (!lock.fourUp && scaling === 'up' && window.verticalZoom === 0.52) {
+      vZoomDown('four', 'fiveDown')('up', 11, 5.2);
+      // lockFourUp = true;
+      // lockFourDown = true;
+      // lockFiveDown = false;
+      // console.log('lockFourUp');
+      // const high = window.UpperVal;
+      // const low = window.LowerVal;
+      // const range = high - low;
+      // const offset = range / 11;
+      // window.UpperVal -= offset;
+      // window.LowerVal += offset;
+      // window.hGridLines = 5.2;
     }
 
-    if (!lockFiveDown && scaling === 'down' && window.verticalZoom === 0.42) {
-      lockFiveDown = true;
-      lockFiveUp = true;
-      lockFourUp = false;
-      console.log('lockFiveDown');
-      const high = window.UpperVal;
-      const low = window.LowerVal;
-      const range = high - low;
-      const offset = range / 9;
-      window.UpperVal += offset;
-      window.LowerVal -= offset;
-      window.hGridLines = 4.2;
+    if (!lock.fiveDown && scaling === 'down' && window.verticalZoom === 0.42) {
+      vZoomDown('five', 'fourUp')('down', 9, 4.2);
+      // lockFiveDown = true;
+      // lockFiveUp = true;
+      // lockFourUp = false;
+      // console.log('lockFiveDown');
+      // const high = window.UpperVal;
+      // const low = window.LowerVal;
+      // const range = high - low;
+      // const offset = range / 9;
+      // window.UpperVal += offset;
+      // window.LowerVal -= offset;
+      // window.hGridLines = 4.2;
     }
 
-    if (!lockFiveUp && scaling === 'up' && window.verticalZoom === 0.42) {
-      lockFiveUp = true;
-      lockFiveDown = true;
-      lockSixDown = false;
-      console.log('lockFiveUp');
-      const high = window.UpperVal;
-      const low = window.LowerVal;
-      const range = high - low;
-      const offset = range / 11;
-      window.UpperVal -= offset;
-      window.LowerVal += offset;
-      window.hGridLines = 4.2;
+    if (!lock.fiveUp && scaling === 'up' && window.verticalZoom === 0.42) {
+      vZoomDown('five', 'sixDown')('up', 11, 4.2);
+      // lockFiveUp = true;
+      // lockFiveDown = true;
+      // lockSixDown = false;
+      // console.log('lockFiveUp');
+      // const high = window.UpperVal;
+      // const low = window.LowerVal;
+      // const range = high - low;
+      // const offset = range / 11;
+      // window.UpperVal -= offset;
+      // window.LowerVal += offset;
+      // window.hGridLines = 4.2;
     }
 
-    if (!lockSixDown && scaling === 'down' && window.verticalZoom === 0.36) {
-      lockSixDown = true;
-      lockSixUp = true;
-      lockFiveUp = false;
-      console.log('lockSixDown');
-      const high = window.UpperVal;
-      const low = window.LowerVal;
-      const range = high - low;
-      const offset = range / 9;
-      window.UpperVal += offset;
-      window.LowerVal -= offset;
-      window.hGridLines = 3.6;
+    if (!lock.sixDown && scaling === 'down' && window.verticalZoom === 0.36) {
+      vZoomDown('six', 'fiveUp')('down', 9, 3.6);
+      // lockSixDown = true;
+      // lockSixUp = true;
+      // lockFiveUp = false;
+      // console.log('lockSixDown');
+      // const high = window.UpperVal;
+      // const low = window.LowerVal;
+      // const range = high - low;
+      // const offset = range / 9;
+      // window.UpperVal += offset;
+      // window.LowerVal -= offset;
+      // window.hGridLines = 3.6;
     }
 
-    if (!lockSixUp && scaling === 'up' && window.verticalZoom === 0.36) {
-      lockSixUp = true;
-      lockSixDown = true;
-      lockSevenDown = false;
-      console.log('lockSixUp');
-      const high = window.UpperVal;
-      const low = window.LowerVal;
-      const range = high - low;
-      const offset = range / 11;
-      window.UpperVal -= offset;
-      window.LowerVal += offset;
-      window.hGridLines = 3.6;
+    if (!lock.sixUp && scaling === 'up' && window.verticalZoom === 0.36) {
+      vZoomDown('six', 'sevenDown')('up', 11, 3.6);
+      // lockSixUp = true;
+      // lockSixDown = true;
+      // lockSevenDown = false;
+      // console.log('lockSixUp');
+      // const high = window.UpperVal;
+      // const low = window.LowerVal;
+      // const range = high - low;
+      // const offset = range / 11;
+      // window.UpperVal -= offset;
+      // window.LowerVal += offset;
+      // window.hGridLines = 3.6;
     }
 
-    if (!lockSevenDown && scaling === 'down' && window.verticalZoom === 0.29) {
-      lockSevenDown = true;
-      lockSevenUp = true;
-      lockSixUp = false;
-      console.log('lockSevenDown');
-      const high = window.UpperVal;
-      const low = window.LowerVal;
-      const range = high - low;
-      const offset = range / 9;
-      window.UpperVal += offset;
-      window.LowerVal -= offset;
-      window.hGridLines = 2.9;
+    if (!lock.sevenDown && scaling === 'down' && window.verticalZoom === 0.29) {
+      vZoomDown('seven', 'sixUp')('down', 9, 2.9);
+      // lockSevenDown = true;
+      // lockSevenUp = true;
+      // lockSixUp = false;
+      // console.log('lockSevenDown');
+      // const high = window.UpperVal;
+      // const low = window.LowerVal;
+      // const range = high - low;
+      // const offset = range / 9;
+      // window.UpperVal += offset;
+      // window.LowerVal -= offset;
+      // window.hGridLines = 2.9;
     }
 
-    if (!lockSevenUp && scaling === 'up' && window.verticalZoom === 0.29) {
-      lockSevenUp = true;
-      lockSevenDown = true;
-      lockEightDown = false;
-      console.log('lockSevenUp');
-      const high = window.UpperVal;
-      const low = window.LowerVal;
-      const range = high - low;
-      const offset = range / 11;
-      window.UpperVal -= offset;
-      window.LowerVal += offset;
-      window.hGridLines = 2.9;
+    if (!lock.sevenUp && scaling === 'up' && window.verticalZoom === 0.29) {
+      vZoomDown('seven', 'eightDown')('up', 11, 2.9);
+      // lockSevenUp = true;
+      // lockSevenDown = true;
+      // lockEightDown = false;
+      // console.log('lockSevenUp');
+      // const high = window.UpperVal;
+      // const low = window.LowerVal;
+      // const range = high - low;
+      // const offset = range / 11;
+      // window.UpperVal -= offset;
+      // window.LowerVal += offset;
+      // window.hGridLines = 2.9;
     }
 
     if (scaling === 'down' && window.verticalZoom <= 0.23) {
-      console.log('lockEightDown');
-      if (lockEightDown) {
-        zoom = 23;
+      console.log('lock.eightDown');
+      if (lock.eightDown) {
+        window.zoom = 23;
         window.verticalZoom = 0.23;
         return;
       }
-      lockEightDown = true;
-      lockSevenUp = false;
+      lock.eightDown = true;
+      lock.sevenUp = false;
       const high = window.UpperVal;
       const low = window.LowerVal;
       const range = high - low;

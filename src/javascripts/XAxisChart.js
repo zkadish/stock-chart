@@ -1,6 +1,25 @@
 import StockChart from './StockChart';
 
 export default class ChartXAxis extends StockChart {
+  constructor(xAxisDOM) {
+    super(xAxisDOM);
+
+    this.DOM.ondblclick = function ondlclickHandler() {
+      console.log('xAxisChart');
+      window.horizontalZoom = 1;
+      window.horizontalPan = 0;
+      // console.log(window.UpperVal, window.LowerVal);
+      // console.log('ondblclick', window.ConstUpperVal, window.ConstLowerVal);
+      // window.UpperVal = window.ConstUpperVal;
+      // window.LowerVal = window.ConstLowerVal;
+      // window.zoom = 100;
+      // window.verticalZoom = 1;
+      // window.verticalBarZoom = 1;
+      // window.horizontalPan = 0;
+      // window.verticalPan = 0;
+      // vZoomReset();
+    };
+  }
   // *****************************************************
   // render vertical lines and first day of week
   // TODO make vLines and day into seperate methods
