@@ -142,7 +142,7 @@ export default class StockChart {
       // window.UpperVal = Math.ceil(priceData.High);
       window.gridUpperVal = priceData.High;
       window.UpperVal = priceData.High;
-      // debugger
+      window.ConstUpperVal = priceData.High;
     }
   }
 
@@ -153,6 +153,7 @@ export default class StockChart {
       // window.LowerVal = Math.floor(priceData.Low);
       window.gridLowerVal = priceData.Low;
       window.LowerVal = priceData.Low;
+      window.ConstLowerVal = priceData.Low;      
     }
   }
 
@@ -184,7 +185,7 @@ export default class StockChart {
   BarData(n, yPos, vRange, index, price) {
     if (!price) return;
     let i = index;
-    const color = 'black';
+    let color = 'red';
     const width = 6;
     const buffer = this.vLineBuffer;
     const offset = this.vLineOffset;
@@ -215,6 +216,13 @@ export default class StockChart {
       if (barLowPos > barClosePos) {
         barLowPos = yPos(price.current, this.UpperVal, this.LowerVal);        
       }
+      window.barClosePos = barClosePos;
+      window.barOpenPos = barOpenPos;
+      // console.log(barClosePos, barOpenPos)
+    }
+
+    if (barClosePos > barOpenPos) {
+      color = 'green';
     }
 
     // create bar with canvas context
@@ -229,15 +237,6 @@ export default class StockChart {
     this.context.scale(window.horizontalZoom, 1);
     this.context.translate(((n + buffer) - (window.horizontalPan)), 0);
 
-    // bar
-    this.context.fillStyle = color;
-    this.context.fillRect(
-      -((n + buffer + ((6 * window.horizontalZoom) * 0.5) - 0.5) - ((window.horizontalPan))),
-      -(barHighPos) + (window.verticalPan),
-      width * window.horizontalZoom,
-      (barHighPos - barLowPos),
-    );
-
     // draw open
     this.context.fillStyle = color;
     this.context.fillRect(
@@ -245,6 +244,15 @@ export default class StockChart {
       -(barOpenPos) + (window.verticalPan),
       -((10 * window.horizontalZoom) + (((6 * window.horizontalZoom) * 0.5) + 0.5)),
       (5 * (window.horizontalZoom * window.horizontalZoom * window.horizontalZoom)) / window.verticalBarZoom,
+    );
+
+    // bar
+    this.context.fillStyle = color;
+    this.context.fillRect(
+      -((n + buffer + ((6 * window.horizontalZoom) * 0.5) - 0.5) - ((window.horizontalPan))),
+      -(barHighPos) + (window.verticalPan),
+      width * window.horizontalZoom,
+      (barHighPos - barLowPos),
     );
 
     // draw close
@@ -369,15 +377,14 @@ export default class StockChart {
   // ***********************************************  
   CurrentPrice(price) {
     if (!price) return;
-    const color = 'red';
+    let color = 'red';
     const x = 0;
-    // *****************************************
-    // const y = -(this.yAxisPoint(this.priceData[0].Close, this.UpperVal, this.LowerVal));
-    // console.log('StockChart', this.currentPrice);
-    // debugger;
+    
     const y = -(this.yAxisPoint(price.current, this.UpperVal, this.LowerVal));
-    // const y = -(this.yAxisPoint(7869.10, this.UpperVal, this.LowerVal));
-    // *****************************************
+    if ((y * -1) > window.barOpenPos) {
+      color = 'green';
+    }
+
     const width = -(this.canvasWidth);
     const height = 2;
 

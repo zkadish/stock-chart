@@ -1,13 +1,40 @@
 import StockChart from './StockChart';
+import { vZoomReset } from './scaleChart';
 
 export default class ChartYAxis extends StockChart {
+  constructor(yAxisDOM) {
+    super(yAxisDOM);
+    this.high = null;
+    this.low = null;
+    this.range = null;
+    this.offset = null;
+    this.highStart = null;
+    this.lowStart = null;
+    // this.price = null;
+
+    const valueRangeLoop = this.valueRangeLoop;
+
+    this.DOM.ondblclick = function ondlclickHandler() {
+      console.log(window.UpperVal, window.LowerVal);
+      console.log('ondblclick', window.ConstUpperVal, window.ConstLowerVal);
+      window.UpperVal = window.ConstUpperVal;
+      window.LowerVal = window.ConstLowerVal;
+      window.zoom = 100;
+      window.verticalZoom = 1;
+      window.verticalBarZoom = 1;
+      window.verticalPan = 0;
+      // window.horizontalPan = 0;
+      vZoomReset();
+    };
+  }
+
   /**
    * RENDER CURRENT PRICE DISPLAY
    * @param {*} price 
    */
   CurrentPrice(price) {
     if (!price || !window.UpperVal || !window.LowerVal) return;
-    const bgColor = 'red';
+    let bgColor = 'red';
     // const bgColor = 'rgba(255, 0, 255, .5)';
     const fgColor = 'white';
     const x = 0;
@@ -15,6 +42,12 @@ export default class ChartYAxis extends StockChart {
     const width = -(this.canvasWidth);
     const height = 32;  //40
     const midPoint = this.canvasHeight * 0.5;
+    // this.price = price;
+    // this.valueRangeLoop(0, price);
+
+    if ((y * -1) > window.barOpenPos) {
+      bgColor = 'green';
+    }
 
     this.context.save();
     this.context.beginPath();
