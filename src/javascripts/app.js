@@ -29,6 +29,8 @@ class Chart {
     scaleChart.verticalZoom();
     panChart();
 
+    this.coins = request.coins;
+
     this.options = Options;
     this.stockChart = null;
     this.yAxisChart = null;
