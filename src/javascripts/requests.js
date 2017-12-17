@@ -8,6 +8,11 @@ const {
 } = window.location;
 // debugger;
 
+let serverRequest = origin;
+if (host.startsWith('localhost')) {
+  serverRequest = 'http://localhost:3000';
+}
+
 function processDate(isoDate) {
   const date = moment(isoDate).format('YYYY-MMM-DD-ddd-ww').split('-');
   return {
@@ -99,8 +104,8 @@ export function history(options) {
 }
 
 export function coins() {
-  // return fetch(`${origin}/api/coins`, {
-  return fetch('http://localhost:3000/api/coins', {
+  return fetch(`${serverRequest}/api/coins`, {
+  // return fetch('http://localhost:3000/api/coins', {
     method: 'GET',
   }).then((response) => {
     return response.json();

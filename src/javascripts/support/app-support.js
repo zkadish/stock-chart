@@ -9,9 +9,7 @@ const currency = document.querySelector('.currency-type');
 
 const chart = new Chart();
 chart.coins().then((coins) => {
-  const coinSymbols = coins.map((c) => {
-    return c.Symbol;
-  });
+  const coinSymbols = coins.map(c => c.Symbol);
   coinSymbols.forEach((c) => {
     const optElement = document.createElement('option');
     optElement.setAttribute('value', c);
